@@ -53,7 +53,6 @@ class splashScreen {
   }
   
   onKeyPressed(event){
-    console.log(event.key);
     if(event.key === ' ')
       this.stop();
   }

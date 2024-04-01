@@ -109,6 +109,7 @@ class bearPunch {
     this.fadeOpacity = 0;
     this.fadeSpeed = 0.05;
     this.currentMain = this.main_2;
+    this.onFaderEnd = null;
   }
   
   stop(){
