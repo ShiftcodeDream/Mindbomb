@@ -28,7 +28,10 @@ class bearPunch {
     this.fadeOpacity = 0.0;
     this.fadeSpeed = 0.02;
     this.timeouts = [];
-    this.currentMain = this.main_1;
+    this.currentMain = this.main_2; // TODO
+    this.rebounds = 0;
+    this.sinCtr = 0;
+    this.factor = 1;
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -77,11 +80,34 @@ class bearPunch {
   }
   
   main_2(){
-    alert("done");
-    this.end();
+    let y = 80;
+    this.can.clear();
+    if(!this.running){
+      this.end();
+      return;
+    }
+    this.slogan.draw(this.can, 12, 366);
+    if(this.rebounds < 7){
+      y = 80 - 254*Math.abs(Math.sin(this.sinCtr));
+      if(y >= 77){
+        this.boing.play();
+        this.rebounds++;
+        if(this.rebounds == 6){
+          this.timeouts.push(setTimeout(this.stop, 1500));
+          this.rebounds = 7;
+        }
+      }
+      this.sinCtr += 0.02;
+      this.factor += 0.006;
+    }
+    this.tlb.draw(this.can, 118, ~~(y/this.factor));
+    this.fader();
+    window.requestAnimFrame(this.currentMain);    
   }
 
   nextScreen(){
+    this.fadeOpacity = 0;
+    this.fadeSpeed = 0.05;
     this.currentMain = this.main_2;
   }
   
