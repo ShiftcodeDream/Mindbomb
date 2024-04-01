@@ -28,7 +28,7 @@ class bearPunch {
     this.fadeOpacity = 0.0;
     this.fadeSpeed = 0.02;
     this.timeouts = [];
-    this.currentMain = this.main_2; // TODO
+    this.currentMain = this.main_1;
     this.rebounds = 0;
     this.sinCtr = 0;
     this.factor = 1;
@@ -116,7 +116,6 @@ class bearPunch {
   }
   
   onKeyPressed(event){
-    console.log(event.key);
     if(event.key === ' ')
       this.stop();
   }
