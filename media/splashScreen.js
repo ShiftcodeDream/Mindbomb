@@ -4,12 +4,13 @@ class splashScreen {
     this.onKeyPressed = this.onKeyPressed.bind(this);
     this.main = this.main.bind(this);
     this.stop = this.stop.bind(this);
+    this.end = this.end.bind(this);
   }
   
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load(){
-    return loadResource(basepath + 'intro-text.png').then(introImage => {
+    return loadResource('intro-text.png').then(introImage => {
       this.introImage = introImage;
     });
   }
@@ -38,13 +39,17 @@ class splashScreen {
       this.introImage.draw(this.can,16,16);
       window.requestAnimFrame(this.main);
     }else{
-      document.body.removeEventListener('keydown', this.onKeyPressed);
-      this.endCallback();
+      this.end();
     }
   }
 
   stop(){
     this.waiting = false;
+  }
+  
+  end(){
+    document.body.removeEventListener('keydown', this.onKeyPressed);
+    this.endCallback();    
   }
   
   onKeyPressed(event){
