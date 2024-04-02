@@ -43,7 +43,7 @@ THE SOFTWARE.
 <script src="//codef.santo.fr/codef/pt.js"></script>
 
 <script> 
-var basepath = "media/", mainDiv, demoManager;
+var basepath = "media/", mainDiv, demoManager, loadingScreen, audioCtx;
 
 function init(){
   mainDiv = document.getElementById("main");
@@ -53,8 +53,16 @@ function init(){
     display: 'inline-block',
     padding:0, margin:0
   });
-  demoManager.playDemo('splashScreen')
-    .then(()=>demoManager.playDemo('bearPunch'));
+  loadResource('demoDescriptions.js')
+  .then(()=>demoManager.getDemo('loaderScreen'))
+  .then(demo => {
+    loadingScreen=demo;
+    loadingScreen.load().then(()=>loadingScreen.load())
+  })
+  .then(()=>demoManager.playDemo('splashScreen'))
+  .then(()=>demoManager.playDemo('bearPunch'))
+  .then(()=>demoManager.playDemo('menuScreen', demoManager))
+  .then(()=>demoManager.playDemo('resetScreen'));
 }
 
 class DemoManagerClass {
@@ -66,8 +74,12 @@ class DemoManagerClass {
   clearCache(){
     this.demoCache = [];
   }
-  getDemo(name, transitionText = []) {
-    // TODO : écran de transition
+  getDemo(name) {
+    if(demoDescr[name] !== undefined){
+      loadingScreen.init(demoDescr[name]);
+      // Problème : Lancer une démo et attendre sa fin, sauf que la fin est conditionnée
+      // par une autre promesse !
+    }
     if(this.demoCache[name] !== undefined)
       return new Promise(ok => {ok(this.demoCache[name])});
     return new Promise((ok, ko) => {
@@ -78,11 +90,11 @@ class DemoManagerClass {
       }).catch(() => ko(name))
     });
   }
-  playDemo(name){
+  playDemo(name, params=null){
     return new Promise((ok,ko) => {
       this.getDemo(name).then(demo => {
         demo.load().then(()=>{
-          demo.init();
+          demo.init(params);
           demo.start().then(()=>{
             clearMainDiv();
             ok();
@@ -95,10 +107,6 @@ class DemoManagerClass {
 
 function clearMainDiv(){
   mainDiv.innerHTML = '';
-}
-
-function MenuScreen(){
-  
 }
 
 /**
