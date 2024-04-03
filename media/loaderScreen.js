@@ -3,8 +3,10 @@ class loaderScreen {
     // Bind to this all internally called functions
     this.onKeyPressed = this.onKeyPressed.bind(this);
     this.main = this.main.bind(this);
+    this.start = this.start.bind(this);
     this.exitRequested = this.exitRequested.bind(this);
     this.end = this.end.bind(this);
+    this.loadDone = this.loadDone.bind(this);
   }
   
   // Loads resources and returns a Promise
@@ -14,12 +16,12 @@ class loaderScreen {
       .then(data => [this.tile, this.font] = data);
   }
   
-  // Initialize the demo (all resources are already loaded)
-  // Initialize scrolltexts here (for example)
-  init(descriptions = []){
+  // Initialize the demo
+  // Params : text description and promise to resolve to know when next screen resources have been loaded
+  init(descriptions = [], promise){
     this.offCan = new canvas(640,400);
     const off = this.offCan.contex;
-    off.fillStyle = this.ctx.createPattern(this.tile.src, 'repeat');
+    off.fillStyle = off.createPattern(this.tile.img, 'repeat');
     off.fillRect(0,16,640,372);
     
     this.font.initTile(32,16,32);
@@ -36,6 +38,8 @@ class loaderScreen {
     this.loadingDone = false;
     this.timeoutOrSpace = false;
     this.timeouts = [];
+
+    promise.then(this.loadDone);
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -65,7 +69,8 @@ class loaderScreen {
       return;
     }
     this.offCan.drawPart(this.can, 0, 0, 0, 0, 640, this.displayedHeight);
-    window.requestAnimFrame(this.currentMain);
+    this.displayedHeight = Math.min(this.displayedHeight+4, 400);
+    window.requestAnimFrame(this.main);
   }
   
   // Exit the demo only when next screen is loaded
@@ -84,11 +89,13 @@ class loaderScreen {
   end(){
     document.body.removeEventListener('keydown', this.onKeyPressed);
     this.timeouts.forEach(t => clearTimeout(t));
-    this.endCallback();
+    // Resolves the promise by providing the loaded demo
+    this.endCallback(this.demo);
   }
   
-  // Called when all the next demo resources have been loaded
-  loadDone(){
+  // Called when all next demo resources have been loaded
+  loadDone(demo){
+    this.demo = demo;
     this.loadingDone = true;
     this.exitRequested();
   }

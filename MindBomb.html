@@ -70,41 +70,62 @@ class DemoManagerClass {
     this.demoCache = [];
     this.playDemo = this.playDemo.bind(this);
     this.getDemo = this.getDemo.bind(this);
+    this.clearCache = this.clearCache.bind(this);
+    this.loadDemo = this.loadDemo.bind(this);
+    this.removeFromCache = this.removeFromCache.bind(this);
   }
   clearCache(){
     this.demoCache = [];
   }
+  // Displays demo presentation screen (if any) and loads demo
   getDemo(name) {
+    let prom = this.loadDemo(name);
+    // Is there a description to display for this demo?
     if(demoDescr[name] !== undefined){
-      loadingScreen.init(demoDescr[name]);
-      // Problème : Lancer une démo et attendre sa fin, sauf que la fin est conditionnée
-      // par une autre promesse !
+      loadingScreen.init(demoDescr[name], prom);
+      return loadingScreen.start();
+    }else{
+      return prom;
     }
-    if(this.demoCache[name] !== undefined)
-      return new Promise(ok => {ok(this.demoCache[name])});
-    return new Promise((ok, ko) => {
-      loadResource(name + '.js').then(()=>{
-        let demo = eval('new ' + name + '()');
-        this.demoCache[name] = demo;
-        ok(demo);
-      }).catch(() => ko(name))
-    });
   }
+  // Loads a demo with its resources
+  loadDemo(name){
+    let demo;
+    const me = this;
+    // Did this demo already loaded?
+    if(this.demoCache[name] !== undefined){
+      return new Promise(ok => {ok(this.demoCache[name])});
+    }else{
+      return new Promise((ok,ko) => loadResource(name + '.js')
+        .then(()=>{
+          demo = eval('new ' + name + '()');
+          return demo.load();
+        })
+        .then(()=>{
+          me.demoCache[name] = demo;
+          ok(demo);
+        })
+      );
+    }
+  }
+  // Do all the stuff to load and run a demo, and restores state.
   playDemo(name, params=null){
     return new Promise((ok,ko) => {
       this.getDemo(name).then(demo => {
-        demo.load().then(()=>{
-          demo.init(params);
-          demo.start().then(()=>{
-            clearMainDiv();
-            ok();
-          });
-        });
-      }).catch(ko);
+        demo.init(params);
+        return demo.start();
+      })
+      .then(()=>{
+        clearMainDiv();
+        ok();
+      })
     });
   }
+  // Removes a demo from the already loaded demos. This could be useful for debugging purposes.
+  removeFromCache(name){
+    delete this.demoCache[name];
+  }
 }
-
 function clearMainDiv(){
   mainDiv.innerHTML = '';
 }
@@ -336,7 +357,6 @@ text-align: left;
 }
 .bt-add-com{
 	display: inline;
-	//float: left;
 	padding: 8px 10px;  margin-right: 10px;
 	background-color: #3498db;
 	color: #fff; cursor: pointer;

@@ -3,6 +3,7 @@ class menuScreen {
     // Bind to this all internally called functions
     this.onKeyPressed = this.onKeyPressed.bind(this);
     this.main = this.main.bind(this);
+    this.init = this.init.bind(this);
   }
   
   // Loads resources and returns a Promise
@@ -27,6 +28,7 @@ class menuScreen {
   start(){
     return new Promise(endCallback => {
       this.endCallback = endCallback;
+      clearMainDiv();
       this.can = new canvas(640,400,"main");
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
@@ -53,6 +55,7 @@ class menuScreen {
   
   onKeyPressed(event){
     // TODO : if key = Escape, end this screen to launch the reset screen
+    console.log(event.key);
     if(event.key === ' ')
       this.stop();
   }
