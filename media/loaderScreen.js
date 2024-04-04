@@ -25,7 +25,7 @@ class loaderScreen {
     off.fillRect(0,16,640,372);
     
     this.font.initTile(32,16,32);
-    let x,y=64;
+    let x,y=40;
     descriptions.forEach(text => {
       if(text.length){
         x = 320 - Math.floor(text.length/2)*32;
