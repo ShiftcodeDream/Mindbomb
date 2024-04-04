@@ -45,7 +45,9 @@ demoDescr = {
 
 // Allows to have the demo Javascript file from the number (eg DemosByNumber[13] = 'Synth')
 DemosByNumber = Object.keys(demoDescr);
+DemosTitle = DemosByNumber.map(k => demoDescr[k].split('||').shift().replaceAll('|',' ').trim());
 DemosByNumber.forEach(k=>demoDescr[k] = demoDescr[k].split('|'));
 
 console.log(DemosByNumber);
 console.log(demoDescr);
+console.log(DemosTitle);
