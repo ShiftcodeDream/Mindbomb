@@ -89,6 +89,7 @@ class loaderScreen {
   end(){
     document.body.removeEventListener('keydown', this.onKeyPressed);
     this.timeouts.forEach(t => clearTimeout(t));
+    clearMainDiv();
     // Resolves the promise by providing the loaded demo
     this.endCallback(this.demo);
   }

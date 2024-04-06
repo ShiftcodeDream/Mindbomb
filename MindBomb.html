@@ -57,8 +57,13 @@ function init(){
   .then(()=>demoManager.getDemo('loaderScreen'))
   .then(demo => {
     loadingScreen=demo;
-    loadingScreen.load().then(()=>loadingScreen.load())
+    loadingScreen.load()
   })
+  
+  /************************** IMPORTANT AND VERY USEFULL *****************************/
+  // Uncomment this line to skip the boring introduction and launch directly the demo you're developping
+  // .then(()=>demoManager.playDemo('RedSector', null, true))
+  
   .then(()=>demoManager.playDemo('splashScreen'))
   .then(()=>demoManager.playDemo('bearPunch'))
   .then(()=>demoManager.playDemo('menuScreen', demoManager))
@@ -78,10 +83,10 @@ class DemoManagerClass {
     this.demoCache = [];
   }
   // Displays demo presentation screen (if any) and loads demo
-  getDemo(name) {
+  getDemo(name, skipPresentation=false) {
     let prom = this.loadDemo(name);
     // Is there a description to display for this demo?
-    if(demoDescr[name] !== undefined){
+    if(!skipPresentation && demoDescr[name] !== undefined){
       loadingScreen.init(demoDescr[name], prom);
       return loadingScreen.start();
     }else{
@@ -89,7 +94,7 @@ class DemoManagerClass {
     }
   }
   // Loads a demo with its resources
-  loadDemo(name){
+  loadDemo(name, skipPresentation=false){
     let demo;
     const me = this;
     // Did this demo already loaded?
@@ -109,9 +114,9 @@ class DemoManagerClass {
     }
   }
   // Do all the stuff to load and run a demo, and restores state.
-  playDemo(name, params=null){
+  playDemo(name, params=null, skipPresentation=false){
     return new Promise((ok,ko) => {
-      this.getDemo(name).then(demo => {
+      this.getDemo(name, skipPresentation).then(demo => {
         demo.init(params);
         return demo.start();
       })
