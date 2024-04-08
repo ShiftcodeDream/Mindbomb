@@ -39,6 +39,14 @@ class menuScreen {
     this.manStep = 0;
     // Action's step number
     this.actionStep = 0;
+    // Doors positions
+    this.doors = new Map();
+    '355-15:358-14:611-7:614-17:617-8:1162-6:1412-16:1341-9:789:13:2549-11:1901-10:2364-12:2584-4:1934-2:1454-3:3294-1:3303-5:3330-18'.split(':').forEach(v=>{
+      let [ind,val]=v.split('-');
+      this.doors.set(ind,val);
+      this.doors.set(1+ind,val);
+    })
+    console.log(this.doors);
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -72,9 +80,9 @@ class menuScreen {
   }
 
   displayMap(){
-    let t = this.pos-329-160;
-    for(let y=0, dy=this.shiftY+6; y<13; y++, t+=80-21, dy+=32){
-      for(let x=0, dx=this.shiftX; x<21; x++, t++, dx+=32){
+    let t = this.pos-330-160;
+    for(let y=0, dy=this.shiftY+6; y<13; y++, t+=80-22, dy+=32){
+      for(let x=0, dx=this.shiftX-32; x<22; x++, t++, dx+=32){
         this.tiles.drawTile(this.can, 83, dx, dy);
         this.tiles.drawTile(this.can, this.map[t], dx, dy);        
 //        this.tiles.drawTile(this.can, 28, dx, dy);        
@@ -89,14 +97,14 @@ class menuScreen {
     let til = 22;
     switch(this.manState){
       case 'r':
-        til = this.manStep;
+        til = ~~(this.manStep/2);
         break;
       case 'l':
-        til = 7 + this.manStep;
+        til = 7 + ~~(this.manStep/2);
         break;
       case 'u':
       case 'd':
-        til = 14 + this.manStep;
+        til = 14 + ~~(this.manStep/2);
         break;
       case 'h':
         til = 21;
@@ -108,27 +116,27 @@ class menuScreen {
   }
   
   interraction(){
-    this.ctx.font = '16px "Comic sans MS", serif';
-    this.ctx.fillStyle="#FFF";
-    this.tiles.drawTile(this.can, 83, 32, 0);
-    this.tiles.drawTile(this.can, this.map[this.pos-80], 32, 0);
-    this.ctx.fillText(this.map[this.pos-80],32,16);
-    
-    this.tiles.drawTile(this.can, 83, 0, 32);
-    this.tiles.drawTile(this.can, this.map[this.pos-1], 0, 32);
-    this.ctx.fillText(this.map[this.pos-1],0,48);
-    
-    this.tiles.drawTile(this.can, 83, 32, 32);
-    this.tiles.drawTile(this.can, this.map[this.pos], 32, 32);
-    this.ctx.fillText(this.map[this.pos],32,48);
-    
-    this.tiles.drawTile(this.can, 83, 64, 32);
-    this.tiles.drawTile(this.can, this.map[this.pos+1], 64, 32);
-    this.ctx.fillText(this.map[this.pos+1],64,48);
-    
-    this.tiles.drawTile(this.can, 83, 32, 64);
-    this.tiles.drawTile(this.can, this.map[this.pos+80], 32, 64);
-    this.ctx.fillText(this.map[this.pos+80],32,80);    
+//    this.ctx.font = '16px "Comic sans MS", serif';
+//    this.ctx.fillStyle="#FFF";
+//    this.tiles.drawTile(this.can, 83, 32, 0);
+//    this.tiles.drawTile(this.can, this.map[this.pos-80], 32, 0);
+//    this.ctx.fillText(this.map[this.pos-80],32,16);
+//    
+//    this.tiles.drawTile(this.can, 83, 0, 32);
+//    this.tiles.drawTile(this.can, this.map[this.pos-1], 0, 32);
+//    this.ctx.fillText(this.map[this.pos-1],0,48);
+//    
+//    this.tiles.drawTile(this.can, 83, 32, 32);
+//    this.tiles.drawTile(this.can, this.map[this.pos], 32, 32);
+//    this.ctx.fillText(this.map[this.pos],32,48);
+//    
+//    this.tiles.drawTile(this.can, 83, 64, 32);
+//    this.tiles.drawTile(this.can, this.map[this.pos+2], 64, 32);
+//    this.ctx.fillText(this.map[this.pos+2],64,48);
+//    
+//    this.tiles.drawTile(this.can, 83, 32, 64);
+//    this.tiles.drawTile(this.can, this.map[this.pos+80], 32, 64);
+//    this.ctx.fillText(this.map[this.pos+80],32,80);    
     
     if(this.actionStep === 0){
       // Is man falling?
@@ -141,50 +149,58 @@ class menuScreen {
         switch(this.currentKey){
           case 'ArrowLeft':
             // Can go left?
-            if(! [25,26].includes(this.map[this.pos-1])){
+            if(! [22,23,25,26].includes(this.map[this.pos-1]))
               this.manState = 'l';
-              // this.pos--;
-            }
+            else
+              this.manState = 'w';
             break;
           case 'ArrowRight':
             // Can go right?
-            if(! [25,26].includes(this.map[this.pos+1])){
+            if(! [22,23,25,26].includes(this.map[this.pos+2]))
               this.manState = 'r';
-              // this.pos++;
-            }
+            else
+              this.manState = 'w';
             break;
           case 'ArrowUp':
             // Can climb?
-            if([8,9,10,11,39,40].includes(this.map[this.pos-160])){
+            if([8,9,10,11,39,40].includes(this.map[this.pos-160]))
               this.manState = 'u';
-              // this.pos -= 80;
-            }
+            else if(['u','h','d'].includes(this.manState))
+              this.manState = 'h';
+            else
+              this.manState = 'w';
             break;
           case 'ArrowDown':
             // Can go down?
-            if([8,9,10,11,39,40].includes(this.map[this.pos+80])){
+            if([8,9,10,11,39,40].includes(this.map[this.pos+80]))
               this.manState = 'd';
-              // this.pos += 80;
-            }
+            else if(['u','h','d'].includes(this.manState))
+              this.manState = 'h';
+            else
+              this.manState = 'w';
             break;
           default:
-            this.manState = 'w';
+            // Was the man on a ladder (ie going up or down) before stopping?
+            if(['u','h','d'].includes(this.manState))
+              this.manState = 'h';
+            else
+              this.manState = 'w';
             this.manStep = 0;
         }
       }
     }
     
     // shifts playfield position
-    if(this.manState !== 'w'){
+    if(this.manState !== 'w' && this.manStat !== 'h'){
       this.actionStep++;
-      this.manStep = (this.manStep+1) % 7;
+      this.manStep = (this.manStep+1) % 14;
       switch(this.manState){
         case 'f':
         case 'd':
-          this.shiftY = 8*this.actionStep;
+          this.shiftY = -8*this.actionStep;
           break;
         case 'u':
-          this.shiftY = -8*this.actionStep;
+          this.shiftY = 8*this.actionStep;
           break;
         case 'l':
           this.shiftX = 8*this.actionStep;
@@ -235,6 +251,16 @@ class menuScreen {
       this.stop(); // Ends the main screen demo => go to reset screen
     if(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Escape', ' '].includes(this.currentKey))
       event.preventDefault();
+    // Demo Selection
+    if(this.currentKey === ' ' || this.currentKey === 'Enter'){
+      this.currentKey = '';
+      let demoNumber = this.doors.get(this.pos);
+      console.log({demonumber:demoNumber});
+      if(demoNumber !== undefined){
+        console.log("Playing " + DemosByNumber[demoNumber]);
+      }
+      console.log(this.pos);
+    }
   }
   
   onKeyUp(){
