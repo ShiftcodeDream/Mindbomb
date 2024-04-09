@@ -18,5 +18,5 @@
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
 | 16 | Vector | THE VECTORS SCREEN | 
 | 17 | NoShit | NO SHIT! | 
-| 18 | DiAhYeah | AH YEAH! | 
+| 18 | DiAhYeah | AH YEAH! | Shiftcode of course!
 | 19 | resetScreen | RESET SCREEN |
