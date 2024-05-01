@@ -12,14 +12,15 @@ class DiMindBomb {
     this.logoDist1 = this.logoDist1.bind(this);
     this.logoDist2 = this.logoDist2.bind(this);
     this.logoDist3 = this.logoDist3.bind(this);
+    this.mainEffect = this.mainEffect.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
     return Promise.all(this.demoManager.loadResource([
-            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png'
-        ])).then(data => [this.back, this.font, this.mindlogo] = data);
+            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png', 'Litley_8x8.png', 'LitleyG_8x8.png'
+        ])).then(data => [this.back, this.font, this.mindlogo, this.letterColor, this.letterGreen] = data);
   }
 
   // Initialize the demo (all resources are already loaded)
@@ -51,7 +52,7 @@ class DiMindBomb {
     for(i=0;i<100;i++)
       ct(26);
     for(i=pi/2; i>=-pi/2; i-=pi/20)
-      ct(13+13*Math.sin(i)); // 26->0
+      ct(13+13*Math.sin(i));
     for(i=0;i<50;i++)
       ct(0);
     for(i=-pi; i<pi; i+=pi/25)
@@ -193,7 +194,33 @@ class DiMindBomb {
     
     this.ctrLogoDist = 0;
     this.logoDist = this.logoDist1;
-
+    
+    // horizontal inversion for green letters
+    let tmp = new canvas(472,8);
+    for(let l=0; l<472; l+=8){
+      for(let xs=0, xd=7; xs<8; xs++,xd--){
+        tmp.contex.drawImage(this.letterGreen.img,xs+l,0,1,8, xd+l,0,1,8);
+      }
+    }
+    this.letterGreenReverse = new image(tmp.canvas.toDataURL('image/png'));
+    
+    this.littleScrollCan = new canvas(8*3, 35);
+    this.letterColor.initTile(8,8,32);
+    this.letterGreen.initTile(8,8,32);
+    this.letterGreenReverse.initTile(8,8,32);
+    this.littleScrolls = [
+      new scrolltext_vertical(),
+      new scrolltext_vertical(),
+      new scrolltext_vertical()
+    ].map(s => {
+      s.scrtxt = "HELLO GUYS !!! @@@ HELLO GUYS !!! MMM WWW @@@      "
+      return s;
+    });
+    this.littleScrolls[0].init(this.littleScrollCan, this.letterColor, 1);
+    this.littleScrolls[1].init(this.littleScrollCan, this.letterGreen, 1);
+    this.littleScrolls[2].init(this.littleScrollCan, this.letterGreenReverse, 1);
+    this.mainShift = 0;
+    
     this.running = true;
   }
 
@@ -204,6 +231,7 @@ class DiMindBomb {
       this.endCallback = endCallback;
       this.can = new canvas(640, 480, "main");
       this.ctx = this.can.contex;
+      this.ctx.imageSmoothingEnabled = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
@@ -217,9 +245,29 @@ class DiMindBomb {
       this.fixedElems();
       this.scroller();
       this.logoDist();
+      this.mainEffect();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
+    }
+  }
+  mainEffect(){
+    let x,ys,yd,l;
+    if(this.mainShift === 0){
+      this.littleScrolls.forEach((s,i)=>s.draw(i*8));
+      this.mainShift = 4;
+    }else{
+      this.mainShift = 0;
+    }
+    for(ys=0; ys<36; ys++){
+      l = ~~(3.176*ys+2);
+      x = 320-l/2;
+      yd = 30 + ys*8 + this.mainShift;
+      this.ctx.drawImage(this.littleScrollCan.canvas, 0,ys, 8,1, x,yd, l,8);
+      l = 110-l;
+      x = x-l;
+      this.ctx.drawImage(this.littleScrollCan.canvas, 8,ys, 8,1, x,yd, l,8);
+      this.ctx.drawImage(this.littleScrollCan.canvas, 8,ys, 8,1, x+110,yd, l,8);
     }
   }
   equalizers(){
