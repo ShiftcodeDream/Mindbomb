@@ -9,20 +9,23 @@ class DiMindBomb {
     this.fixedElems = this.fixedElems.bind(this);
     this.equalizers = this.equalizers.bind(this);
     this.scroller = this.scroller.bind(this);
+    this.logoDist1 = this.logoDist1.bind(this);
+    this.logoDist2 = this.logoDist2.bind(this);
+    this.logoDist3 = this.logoDist3.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
     return Promise.all(this.demoManager.loadResource([
-            'di-top.png', 'MindFont_32x32.png'
-        ])).then(data => [this.back, this.font] = data);
+            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png'
+        ])).then(data => [this.back, this.font, this.mindlogo] = data);
   }
 
   // Initialize the demo (all resources are already loaded)
   // Initialize scrolltexts here (for example)
   init() {
-    let ct, i;
+    let ct, i, y;
     const pi=Math.PI;
     this.offScrollCan = new canvas(640,32);
     this.scrolltextCan = new canvas(640,78);
@@ -42,6 +45,7 @@ class DiMindBomb {
       ct.fillRect(0,i*2, 1,2);
     })
     
+    // Scroller distorsion curve
     this.distCurve = [];
     ct = v=> this.distCurve.push(~~v);
     for(i=0;i<100;i++)
@@ -63,7 +67,7 @@ class DiMindBomb {
     for(i=0;i<100;i++)
       ct(26);
     for(i=pi/2; i>=-pi/2; i-=pi/20)
-      ct(13+13*Math.sin(i)); // 26->0
+      ct(13+13*Math.sin(i));
     for(i=0; i<6*pi; i+=pi/40)
       ct(52-52*Math.abs(Math.cos(i)));
     for(i=0; i<27; i+=2)
@@ -74,11 +78,121 @@ class DiMindBomb {
       ct(i);
     for(i=0; i<8*pi; i+=pi/20)
       ct(26+13*Math.sin(i));
-    
-    
-    for(i=0;i<100;i++)  ct(200);
-    
+    for(i=0; i<8*pi; i+=pi/16)
+      ct(26+18*Math.sin(i));
+    for(i=0; i<8*pi; i+=pi/14)
+      ct(26+26*Math.sin(i));
+    for(i=0; i<12*pi; i+=pi/20)
+      ct(26+13*Math.sin(i));
+    for(i=26; i<53; i++)
+      ct(i);
+    for(i=2*pi; i<6*pi; i+=pi/40)
+      ct(52*5/i-52*5/i*Math.abs(Math.sin(i)));
+    for(i=0; i<4*pi; i+=pi/40)
+      ct(52*5/(6*pi-i)-52*5/(6*pi-i)*Math.abs(Math.sin(i)));
+    for(i=37; i<48; i++)
+      ct(i);
+    for(; i>25; i--)
+      ct(i);
     this.ctrDistScroll=0;
+
+    // Logo distorsion curve 1 (vertical)
+    this.distCurve1 = [];
+    ct = v=> this.distCurve1.push(~~v);
+    // Range [-12, 12]
+    for(i=0; i<90; i++)
+      ct(0);
+    for(i=0; i<13; i++)
+      ct(i);
+    for(i=0; i<90; i++)
+      ct(12);
+    for(i=12; i>-13; i--)
+      ct(i);
+    for(i=0; i<90; i++)
+      ct(-12);
+    for(i=-12; i<13; i+=1.5)
+      ct(i);
+    for(i=12; i>-13; i-=1.5)
+      ct(i);
+    for(i=0; i<12*pi; i+=pi/40)
+      ct(12*Math.sin(i-pi/2));
+    for(i=0; i<4*pi; i+=pi/40)
+      ct(12*Math.sin(i-pi/2));
+    for(i=0; i<6*pi; i+=pi/40)
+      ct(24*Math.abs(Math.sin(i))-12);
+    for(i=0; i<6*pi; i+=pi/30)
+      ct(24*Math.abs(Math.sin(i))-12);
+    for(i=0; i<6*pi; i+=pi/20)
+      ct(24*Math.abs(Math.sin(i))-12);
+    for(i=0; i<90; i++)
+      ct(0);
+    this.distCurve1 = this.distCurve1.map(n=>328-n);
+    this.maxLogoDist1 = this.distCurve1.length - 31;
+
+    // Logo distorsion curve 2 (horizontal)
+    this.distCurve2 = [];
+    ct = v=> this.distCurve2.push(~~v);
+    // Range [-80, 80]
+    for(i=0; i<55; i++)
+      ct(0);
+    for(i=0; i<81; i+=4)
+      ct(i);
+    for(i=0; i<55; i++)
+      ct(80);
+    for(i=80; i>-81; i--)
+      ct(i);
+    for(i=pi; i<3*pi+pi/2; i+=pi/70)
+      ct(80*Math.cos(i));
+    for(i=0; i<55; i++)
+      ct(0);
+    for(i=0; i<6*pi; i+=pi/40)
+      ct(80*Math.sin(i));
+    for(i=0; i<6*pi; i+=pi/20)
+      ct(-40+40*Math.sin(i));
+    for(i=0; i<55; i++)
+      ct(-40);
+    for(i=0; i<6*pi; i+=pi/6)
+      ct(-40+7*Math.sin(i));
+    for(i=0; i<55; i++)
+      ct(-40);
+    for(i=0; i<6*pi; i+=pi/6)
+      ct(-40+7*Math.sin(i));
+    for(i=0; i<55; i++)
+      ct(-40);
+    for(i=-40; i<0; i+=4)
+      ct(i);
+    for(i=0; i<60*pi; i+=pi/3)
+      ct(2*Math.sin(i));
+    for(i=0; i>-60; i-=4)
+      ct(i);
+    for(i=0; i<80*pi; i+=pi/3)
+      ct(-60+2*Math.sin(i));
+    for(i=-20; i<60; i+=4)
+      ct(i);
+    for(i=0; i<55; i++)
+      ct(60);
+    for(i=0; i<20*pi; i+=pi/3)
+      ct(60+2*Math.sin(i));
+    for(i=0; i<pi; i+=pi/24)
+      ct(60*Math.cos(i));
+    for(i=pi; i<2*pi; i+=pi/24)
+      ct(-30+30*Math.cos(i));
+    for(i=0; i<55; i++)
+      ct(0);
+    this.distCurve2 = this.distCurve2.map(n=>n+80);
+    this.maxLogoDist2 = this.distCurve2.length - 55;
+
+    // Logo distorsion curve 3 (vertical shrink)
+    this.distCurve3 = [];
+    ct = v=> this.distCurve3.push(~~v);
+    for(i=0; i<8*pi; i+=pi/12)
+      ct(37+17*Math.cos(i));
+    for(i=0; i<8*pi; i+=pi/24)
+      ct(37+17*Math.cos(i));
+    this.maxLogoDist3 = this.distCurve3.length;
+    
+    this.ctrLogoDist = 0;
+    this.logoDist = this.logoDist1;
 
     this.running = true;
   }
@@ -102,6 +216,7 @@ class DiMindBomb {
       this.equalizers();
       this.fixedElems();
       this.scroller();
+      this.logoDist();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -139,6 +254,32 @@ class DiMindBomb {
       this.ctrScrollDegr = 0;
     
     this.scrolltextCan.draw(this.can,0,402);
+  }
+  logoDist1(){
+    for(let x=0, ctr=this.ctrLogoDist; x<480; x+=16){
+      this.ctx.drawImage(this.mindlogo.img, x,0,16,54, x+80,this.distCurve1[ctr++],16,54);
+    }
+    if(this.ctrLogoDist++ >= this.maxLogoDist1){
+      this.ctrLogoDist = 0;
+      this.logoDist = this.logoDist2;
+    }
+  }
+  logoDist2(){
+    for(let y=0, ctr=this.ctrLogoDist; y<53; y+=2){
+      this.ctx.drawImage(this.mindlogo.img, 0,y,480,2, this.distCurve2[ctr++],y+328,480,2);
+    }
+    if(this.ctrLogoDist++ >= this.maxLogoDist2){
+      this.ctrLogoDist = 0;
+      this.logoDist = this.logoDist3;
+    }
+  }
+  logoDist3(){
+    let h = this.distCurve3[this.ctrLogoDist], y = 328 + 27 - h/2;
+    this.ctx.drawImage(this.mindlogo.img, 0,0,480,54, 80,y,480,h);
+    if(this.ctrLogoDist++ >= this.maxLogoDist3){
+      this.ctrLogoDist = 0;
+      this.logoDist = this.logoDist1;
+    }    
   }
   fromRgb7(r,g,b){
     return 'rgb(' + (r*36) + ',' + (g*36) + ',' + (b*36) + ')';
