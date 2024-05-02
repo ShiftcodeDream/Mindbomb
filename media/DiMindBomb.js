@@ -221,6 +221,16 @@ class DiMindBomb {
     this.littleScrolls[2].init(this.littleScrollCan, this.letterGreenReverse, 1);
     this.mainShift = 0;
     
+    // text distorsion at the right of the screen
+    this.distRight = [];
+    for(i=0;i<2*pi;i+=pi/68){
+      this.distRight.push({
+        x: ~~(525+43*Math.sin(i)),
+        w: ~~(36*Math.sin(i))
+      })
+    }
+    this.ctrDistRight = 0;
+    
     this.running = true;
   }
 
@@ -252,23 +262,46 @@ class DiMindBomb {
     }
   }
   mainEffect(){
-    let x,ys,yd,l;
+    let x,ys,yd,l,ctr,param;
+    const source = this.littleScrollCan.canvas;
     if(this.mainShift === 0){
       this.littleScrolls.forEach((s,i)=>s.draw(i*8));
       this.mainShift = 4;
     }else{
       this.mainShift = 0;
     }
+    
+    // Centered scrolltext
     for(ys=0; ys<36; ys++){
       l = ~~(3.176*ys+2);
       x = 320-l/2;
       yd = 30 + ys*8 + this.mainShift;
-      this.ctx.drawImage(this.littleScrollCan.canvas, 0,ys, 8,1, x,yd, l,8);
+      this.ctx.drawImage(source, 0,ys, 8,1, x,yd, l,8);
       l = 110-l;
       x = x-l;
-      this.ctx.drawImage(this.littleScrollCan.canvas, 8,ys, 8,1, x,yd, l,8);
-      this.ctx.drawImage(this.littleScrollCan.canvas, 8,ys, 8,1, x+110,yd, l,8);
+      this.ctx.drawImage(source, 8,ys, 8,1, x,yd, l,8);
+      this.ctx.drawImage(source, 8,ys, 8,1, x+110,yd, l,8);
     }
+    
+    // Right scrolltext
+    for(yd=0, ctr=this.ctrDistRight; yd<280; yd+=2){
+      ys = ~~(yd/8);
+      param = this.distRight[ctr++];
+      if(ctr >= this.distRight.length)
+        ctr = 0;
+      if(param.w>0){
+        this.ctx.drawImage(source, 0,ys, 8,1, param.x,yd+30, param.w, 2);
+      }else{
+        this.ctx.drawImage(source, 16,ys, 8,1, param.x,yd+30, param.w, 2);
+      }
+    }
+    if(this.mainShift === 0){
+      this.ctrDistRight--;
+      if(this.ctrDistRight < 0)
+        this.ctrDistRight = this.distRight.length-1;
+    }
+    
+    // Left scrolltext
   }
   equalizers(){
     // TODO
