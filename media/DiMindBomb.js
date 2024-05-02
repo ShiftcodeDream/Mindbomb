@@ -6,7 +6,6 @@ class DiMindBomb {
     this.main = this.main.bind(this);
     this.stop = this.stop.bind(this);
     this.end = this.end.bind(this);
-    this.fixedElems = this.fixedElems.bind(this);
     this.equalizers = this.equalizers.bind(this);
     this.scroller = this.scroller.bind(this);
     this.logoDist1 = this.logoDist1.bind(this);
@@ -19,8 +18,8 @@ class DiMindBomb {
   // You can make long precalculations here.
   load() {
     return Promise.all(this.demoManager.loadResource([
-            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png', 'Litley_8x8.png', 'LitleyG_8x8.png'
-        ])).then(data => [this.back, this.font, this.mindlogo, this.letterColor, this.letterGreen] = data);
+            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png', 'Litley_8x8.png', 'LitleyG_8x8.png', 'dimb.ym'
+        ])).then(data => [this.back, this.font, this.mindlogo, this.letterColor, this.letterGreen, this.preload] = data);
   }
 
   // Initialize the demo (all resources are already loaded)
@@ -241,6 +240,13 @@ class DiMindBomb {
     }
     this.ctrDistLeft = 0;
     
+    this.vueMetersCan = new canvas(1,14);
+    ct = this.vueMetersCan.contex;
+    "2467642".split('').forEach((c,i) => {
+      ct.fillStyle = this.fromRgb7(0,c,0);
+      ct.fillRect(0,i*2,1,2);
+    });
+    
     this.running = true;
   }
 
@@ -253,6 +259,8 @@ class DiMindBomb {
       this.ctx = this.can.contex;
       this.ctx.imageSmoothingEnabled = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik = new music('YM');
+      this.zik.LoadAndRun(this.demoManager.basepath + 'dimb.ym');
       window.requestAnimFrame(this.main);
     });
   }
@@ -262,7 +270,6 @@ class DiMindBomb {
     if (this.running) {
       this.can.clear();
       this.equalizers();
-      this.fixedElems();
       this.scroller();
       this.logoDist();
       this.mainEffect();
@@ -330,11 +337,19 @@ class DiMindBomb {
     }
   }
   equalizers(){
-    // TODO
-  }
-  fixedElems(){
+    let vol = this.zik.loader.player.voiceA.vol;
+    this.ctx.drawImage(this.vueMetersCan.canvas, 0,0,1,14, 304,4,-9*vol,14);
+    vol = this.zik.loader.player.voiceC.vol;
+    this.ctx.drawImage(this.vueMetersCan.canvas, 0,0,1,14, 336,4,9*vol,14);
+    
     this.ctx.drawImage(this.back.img, 0,0,640,22, 0,0,640,22);
     this.ctx.drawImage(this.back.img, 0,22,640,68, 0,412,640,68);
+    
+    vol = this.zik.loader.player.voiceB.vol/2;
+    this.ctx.fillStyle = this.fromRgb7(vol, vol, vol);
+    this.ctx.globalCompositeOperation = 'destination-over';
+    this.ctx.fillRect(308,4,24,14);
+    this.ctx.globalCompositeOperation = 'source-over';
   }
   scroller(){
     let a,x;
@@ -398,6 +413,7 @@ class DiMindBomb {
   // removes event listeners before notifying the menu screen that the demo is finished
   end() {
     document.body.removeEventListener('keydown', this.onKeyPressed);
+    stopCodefMusic();
     this.endCallback();
   }
 
