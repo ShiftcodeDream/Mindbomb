@@ -12,14 +12,15 @@ class DiMindBomb {
     this.logoDist2 = this.logoDist2.bind(this);
     this.logoDist3 = this.logoDist3.bind(this);
     this.mainEffect = this.mainEffect.bind(this);
+    this.forFun = this.forFun.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
     return Promise.all(this.demoManager.loadResource([
-            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png', 'Litley_8x8.png', 'LitleyG_8x8.png', 'dimb.ym'
-        ])).then(data => [this.back, this.font, this.mindlogo, this.letterColor, this.letterGreen, this.preload] = data);
+            'di-top.png', 'MindFont_32x32.png', 'mind-logo3.png', 'Litley_8x8.png', 'LitleyG_8x8.png', 'dicff.png', 'dimb.ym'
+        ])).then(data => [this.back, this.font, this.mindlogo, this.letterColor, this.letterGreen, this.codingForFun, this.preload] = data);
   }
 
   // Initialize the demo (all resources are already loaded)
@@ -247,6 +248,9 @@ class DiMindBomb {
       ct.fillRect(0,i*2,1,2);
     });
     
+    this.forFunCan = new canvas(118,220);
+    this.forFunCtr = 0;
+    
     this.running = true;
   }
 
@@ -273,10 +277,23 @@ class DiMindBomb {
       this.scroller();
       this.logoDist();
       this.mainEffect();
+      this.forFun();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
     }
+  }
+  forFun(){
+    const ct = this.forFunCan.contex;
+    this.forFunCan.clear();
+    ct.globalCompositeOperation = 'source-over';
+    [0,26,154,180,206].forEach((yd,i) => ct.drawImage(this.codingForFun.img, 0,i*14,118,14, 0,yd,118,14));
+    ct.globalCompositeOperation = 'source-in';
+    ct.drawImage(this.scrollDegr.canvas, 0,this.forFunCtr,1,110, 0,0,118,220);
+    this.forFunCan.draw(this.can, 270, 46);
+    this.forFunCtr++;
+    if(this.forFunCtr > 98)
+      this.forFunCtr = 0;
   }
   mainEffect(){
     let x,ys,yd,l,ctr,param;
