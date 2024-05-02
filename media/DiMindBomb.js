@@ -231,6 +231,16 @@ class DiMindBomb {
     }
     this.ctrDistRight = 0;
     
+    // text distorsion at the left of the screen
+    this.distLeft = [];
+    for(i=0;i<2*pi;i+=pi/68){
+      this.distLeft.push({
+        x: ~~(78+42*Math.sin(i)),
+        w: ~~(36*Math.cos(i))
+      })
+    }
+    this.ctrDistLeft = 0;
+    
     this.running = true;
   }
 
@@ -302,6 +312,22 @@ class DiMindBomb {
     }
     
     // Left scrolltext
+    for(yd=0, ctr=this.ctrDistLeft; yd<280; yd+=2){
+      ys = ~~(yd/8);
+      param = this.distLeft[ctr++];
+      if(ctr >= this.distLeft.length)
+        ctr = 0;
+      if(param.w>0){
+        this.ctx.drawImage(source, 0,ys, 8,1, param.x,yd+30, param.w, 2);
+      }else{
+        this.ctx.drawImage(source, 16,ys, 8,1, param.x,yd+30, param.w, 2);
+      }
+    }
+    if(this.mainShift === 0){
+      this.ctrDistLeft--;
+      if(this.ctrDistLeft < 0)
+        this.ctrDistLeft = this.distLeft.length-1;
+    }
   }
   equalizers(){
     // TODO
