@@ -12,11 +12,11 @@
 | 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
 | 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | 
-| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | WIP
+| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | 
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | 
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | 
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
-| 16 | Vector | THE VECTORS SCREEN | 
+| 16 | Vector | THE VECTORS SCREEN | Shiftcode | WIP
 | 17 | NoShit | NO SHIT! | 
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
 | 19 | resetScreen | RESET SCREEN |
