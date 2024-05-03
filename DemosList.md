@@ -10,9 +10,9 @@
 | 7 | PoDo.js | THE P.D LIBRARY INFO SCREEN | 
 | 8 | DiMatrix.js | THE 2ND DIGITAL INSANITY GUEST SCREEN THE MATRIX SCREEN | 
 | 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
-| 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | To be integrated
+| 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
 | 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | 
-| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | 
+| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | WIP
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | 
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | 
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
