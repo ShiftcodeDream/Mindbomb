@@ -1,7 +1,7 @@
 | num | Javascript File | Demo Title | Who works on this screen? | Status
 | - | --- | --- | --- | --- |
 | 0 | menuScreen.js | THE MAIN MENU | Shiftcode | Done
-| 1 | RedSector.js | THE RED SECTOR DEMO | 
+| 1 | RedSector.js | THE RED SECTOR DEMO | Shiftcode | WIP
 | 2 | LandScroll.js | THE LANDSCAPE SCREEN | 
 | 3 | DiMindBomb.js | THE DIGITAL INSANITY GUEST SCREEN NUMBER 1 | Shiftcode | Done
 | 4 | MovingBack.js | THE MOVING BACKGROUND SCREEN | Mellowman
@@ -16,7 +16,7 @@
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | 
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | 
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
-| 16 | Vector | THE VECTORS SCREEN | Shiftcode | WIP
+| 16 | Vector | THE VECTORS SCREEN | Shiftcode | Done
 | 17 | NoShit | NO SHIT! | 
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
 | 19 | resetScreen | RESET SCREEN |
