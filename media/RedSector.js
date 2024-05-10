@@ -7,13 +7,15 @@ class RedSector {
     this.stop = this.stop.bind(this);
     this.start = this.start.bind(this);
     this.end = this.end.bind(this);
+    this.nextShape = this.nextShape.bind(this);
+    this.refreshShape = this.refreshShape.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['AllBalls.png', 'text.png'])).then(data => {
-      [this.allballs, this.text] = data;
+    return Promise.all(this.demoManager.loadResource(['AllBalls.png', 'text.png', 'shapes-data.js'])).then(data => {
+      [this.allballs, this.text, this.script] = data;
     });
   }
 
@@ -55,14 +57,15 @@ class RedSector {
     tmp.contex.drawImage(this.allballs.img, 0,186,54,54, 0,0,54,54);
     this.balls.push(new image(tmp.canvas.toDataURL('image/png')));
     
-    this.square = this.shape("-280,280,0,29/-200,280,0,29/-120,280,0,29/-40,280,0,29/40,280,0,29/120,280,0,29/200,280,0,29/280,280,0,29/-280,200,0,29/-200,200,0,37/-120,200,0,37/-40,200,0,37/40,200,0,37/120,200,0,37/200,200,0,37/280,200,0,29/-280,120,0,29/-200,120,0,29/-120,120,0,37/-40,120,0,29/40,120,0,29/120,120,0,37/200,120,0,29/280,120,0,29/-280,40,0,29/-200,40,0,29/-120,40,0,37/-40,40,0,29/40,40,0,29/120,40,0,37/200,40,0,29/280,40,0,29/-280,-40,0,29/-200,-40,0,29/-120,-40,0,37/-40,-40,0,29/40,-40,0,29/120,-40,0,37/200,-40,0,29/280,-40,0,29/-280,-120,0,29/-200,-120,0,29/-120,-120,0,37/-40,-120,0,29/40,-120,0,29/120,-120,0,37/200,-120,0,29/280,-120,0,29/-280,-200,0,29/-200,-200,0,37/-120,-200,0,37/-40,-200,0,37/40,-200,0,37/120,-200,0,37/200,-200,0,37/280,-200,0,29/-280,-280,0,29/-200,-280,0,29/-120,-280,0,29/-40,-280,0,29/40,-280,0,29/120,-280,0,29/200,-280,0,29/280,-280,0,29")
-    .map(h => {h.img++; return h;});
-
-    this.currentShape = this.square;
+    let manager = new ShapeManager();
+    this.shapes = manager.getAll();
+    this.listShapes = manager.getNames();
+    this.ctrShapes = 0;
+    
     this.playground = new canvas(640,386);
-    this.the3d=new codef3D(this.playground, 900, 40, 1, 1600 );
-    this.the3d.vectorball_img(this.currentShape, this.balls );
+    this.the3d = new codef3D(this.playground, 900, 40, 1, 1600 );
     this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = 0.5;    
+    this.nextShape();
     
     this.running = true;
   }
@@ -113,29 +116,25 @@ class RedSector {
       this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
       this.ctx.fillRect(0,400,640,80);
 
-//      let x=0,y=0;
-//      this.balls.forEach(b => {
-//        if(b.img){
-//          b.draw(this.can,x,y);
-//          x+=b.img.width;
-//          if(x>550){
-//            x=0;y+=54;
-//          }
-//        }
-//      });
       window.requestAnimFrame(this.main);
     } else {
       this.end();
     }
   }
-
-  shape(data){
-    return data.split('/').map(k => {
-      let [x,y,z,n] = k.split(',');
-      return {x:x, y:y, z:z, img:n};
-    })
+  nextShape(){
+    this.ctrShapes++;
+    if(this.ctrShapes >= this.listShapes.length)
+      this.ctrShapes = 0;
+    console.log(this.shapes);
+    console.log(this.ctrShapes);
+    this.currentShape = this.shapes[this.listShapes[this.ctrShapes]];
+    this.refreshShape();
   }
-  
+  refreshShape(){
+    console.log(this.the3d);
+    this.the3d.group.remove(this.the3d.group.children);
+    this.the3d.vectorball_img(this.currentShape.p, this.balls );    
+  }
   stop() {
     this.running = false;
   }
@@ -151,6 +150,9 @@ class RedSector {
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
+    }
+    if (event.key === 'n') {
+      
     }
   }
 }
