@@ -23,8 +23,10 @@ class RedSector {
   // Initialize scrolltexts here (for example)
   // For each balls palets
   init() {
+    let im;
     this.text.initTile(640,14);
     this.ctrTxt = 0;
+    this.zoomFactor = 0.35;
     
     this.balls = [];
     "300,400,500,600,700/033,044,055,066,077/333,444,555,666,777/302,403,504,605,706/230,340,450,560,670/311,412,513,614,715/320,321,522,623,724/230,330,431,532,733/230,340,440,541,651/030,040,050,060,070/320,430,540,650,760/013,014,015,026,027/023,034,045,056,067/522,533,644,755,766/130,240,350,460,570"
@@ -47,24 +49,25 @@ class RedSector {
           }
         }
         tmp.contex.putImageData(points, 0,0);
-        this.balls.push(new image(tmp.canvas.toDataURL('image/png')));
+        im = new image(tmp.canvas.toDataURL('image/png'));
+        im.img.width = s;
+        im.img.height = s;
+        this.balls.push(im);
         y += s;
       });
-      this.balls.push({});
+      this.balls.push(im);
     });
     // And finally the checked
     let tmp = new canvas(54,54);
     tmp.contex.drawImage(this.allballs.img, 0,186,54,54, 0,0,54,54);
     this.balls.push(new image(tmp.canvas.toDataURL('image/png')));
     
-    let manager = new ShapeManager();
-    this.shapes = manager.getAll();
-    this.listShapes = manager.getNames();
-    this.ctrShapes = 0;
+    this.shapeManager = new ShapeManager();
+    this.listShapes = this.shapeManager.getNames();
+    this.ctrShapes = 1; // TODO : -1
     
     this.playground = new canvas(640,386);
-    this.the3d = new codef3D(this.playground, 900, 40, 1, 1600 );
-    this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = 0.5;    
+    this.the3d = new codef3D(this.playground, 600, 40, 1, 1600 );
     this.nextShape();
     
     this.running = true;
@@ -116,6 +119,16 @@ class RedSector {
       this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
       this.ctx.fillRect(0,400,640,80);
 
+      // TODO : delete
+      this.ctx.font = 'bold 12px serif';
+      this.ctx.fillStyle = "#FFF";
+      this.ctx.textBaseline = 'top';
+      for(let f=0;f<this.balls.length;f+=8){
+        this.balls[f].draw(this.can,0,f*2);
+        this.ctx.fillText(f,16,f*2)
+      }
+      // end delete
+      
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -125,14 +138,17 @@ class RedSector {
     this.ctrShapes++;
     if(this.ctrShapes >= this.listShapes.length)
       this.ctrShapes = 0;
-    console.log(this.shapes);
-    console.log(this.ctrShapes);
-    this.currentShape = this.shapes[this.listShapes[this.ctrShapes]];
+    const shapeName = this.listShapes[this.ctrShapes];
+    console.log("Shape: " + shapeName);
+    this.currentShape = this.shapeManager.getCopyOf(shapeName);
+    console.log(this.currentShape);
     this.refreshShape();
   }
   refreshShape(){
-    console.log(this.the3d);
-    this.the3d.group.remove(this.the3d.group.children);
+    this.the3d.scene.remove(this.the3d.group);
+    this.the3d.group = new THREE.Object3D();
+    this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = this.zoomFactor;    
+    this.the3d.scene.add(this.the3d.group);
     this.the3d.vectorball_img(this.currentShape.p, this.balls );    
   }
   stop() {
@@ -152,7 +168,12 @@ class RedSector {
       this.stop();
     }
     if (event.key === 'n') {
-      
+      this.nextShape();
+    }
+    // TODO : delete
+    if (event.key === 'x') {
+      this.currentShape.p[0].img = 57;
+      this.refreshShape();
     }
   }
 }
