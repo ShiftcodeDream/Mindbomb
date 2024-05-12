@@ -102,6 +102,8 @@ class RedSector {
       
       // 3D
       this.playground.clear();
+      if(this.currentShape.animate())
+        this.refreshShape();
       this.the3d.draw();
       this.playground.draw(this.can,0,14);
       this.text.drawTile(this.can,this.ctrTxt,0,0);
@@ -148,9 +150,11 @@ class RedSector {
     this.refreshShape();
   }
   refreshShape(){
+    const saveRotation = Object.assign({}, this.the3d.group.rotation);
     this.the3d.scene.remove(this.the3d.group);
     this.the3d.group = new THREE.Object3D();
-    this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = this.zoomFactor;    
+    this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = this.zoomFactor;
+    this.the3d.group.rotation = saveRotation;
     this.the3d.scene.add(this.the3d.group);
     this.the3d.vectorball_img(this.currentShape.p, this.balls );    
   }
