@@ -65,7 +65,7 @@ class RedSector {
     
     this.shapeManager = new ShapeManager();
     this.listShapes = this.shapeManager.getNames();
-    this.ctrShapes = 5; // TODO : -1
+    this.ctrShapes = -1; // TODO : -1
     
     this.playground = new canvas(640,386);
     this.the3d = new codef3D(this.playground, 600, 40, 1, 1600 );
