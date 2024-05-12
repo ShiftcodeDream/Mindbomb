@@ -27,6 +27,7 @@ class RedSector {
     this.text.initTile(640,14);
     this.ctrTxt = 0;
     this.zoomFactor = 0.35;
+    this.rotation = true;
     
     this.balls = [];
     "300,400,500,600,700/033,044,055,066,077/333,444,555,666,777/302,403,504,605,706/230,340,450,560,670/311,412,513,614,715/320,321,522,623,724/230,330,431,532,733/230,340,440,541,651/030,040,050,060,070/320,430,540,650,760/013,014,015,026,027/023,034,045,056,067/522,533,644,755,766/130,240,350,460,570"
@@ -64,7 +65,7 @@ class RedSector {
     
     this.shapeManager = new ShapeManager();
     this.listShapes = this.shapeManager.getNames();
-    this.ctrShapes = 1; // TODO : -1
+    this.ctrShapes = 5; // TODO : -1
     
     this.playground = new canvas(640,386);
     this.the3d = new codef3D(this.playground, 600, 40, 1, 1600 );
@@ -105,9 +106,11 @@ class RedSector {
       this.playground.draw(this.can,0,14);
       this.text.drawTile(this.can,this.ctrTxt,0,0);
 
-      this.the3d.group.rotation.x+=0.01;
-      this.the3d.group.rotation.y+=0.02;
-      this.the3d.group.rotation.z+=0.04;      
+      if(this.rotation){
+        this.the3d.group.rotation.x+=0.01;
+        this.the3d.group.rotation.y+=0.02;
+        this.the3d.group.rotation.z+=0.04;
+      }
       
       // Reflection
       this.ctx.fillStyle = "#00007A";
@@ -174,6 +177,9 @@ class RedSector {
     if (event.key === 'x') {
       this.currentShape.p[0].img = 57;
       this.refreshShape();
+    }
+    if (event.key === 'p') {
+      this.rotation = !this.rotation;
     }
   }
 }
