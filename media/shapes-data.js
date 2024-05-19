@@ -3,7 +3,7 @@ class Shape{
     this.points = data.split('|').map(k => {
       let [x,y,z,n] = k.split(',');
       if(n === undefined) n = defBall;
-      return {x:x, y:y, z:z, img:n};
+      return {x:parseFloat(x), y:parseFloat(y), z:parseFloat(z), img:n};
     });
     if(params !== null){
       const me = this;
@@ -41,7 +41,6 @@ class ShapeManager{
       
       spacecube: new Shape("140,140,0,120|0,140,0,120|-140,140,0,120|140,0,0,120|0,0,0,120|-140,0,0,120|140,-140,0,120|0,-140,0,120|-140,-140,0,120|0,0,140,120|0,0,-140,120|-280,0,0,120|280,0,0,120|-420,0,0,120|420,0,0,120|0,0,280,120|0,0,-280,120|0,-280,0,120|0,-420,0,120|0,280,0,120|0,420,0,120|140,420,0,120|-140,420,0,120|140,-420,0,120|-140,-420,0,120|0,0,420,120|0,0,-420,120"),
     };
-    // this.shapes['heli'].points = this.shapes['heli'].points.slice(0,58);
     
     // Animations
     this.shapes['heli'].animate = function() {

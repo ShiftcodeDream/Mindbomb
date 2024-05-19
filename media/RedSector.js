@@ -1,14 +1,11 @@
 class RedSector {
   constructor(demoManager) {
-    this.demoManager = demoManager;
-    // Bind to this all internally called functions
-    this.onKeyPressed = this.onKeyPressed.bind(this);
-    this.main = this.main.bind(this);
-    this.stop = this.stop.bind(this);
-    this.start = this.start.bind(this);
-    this.end = this.end.bind(this);
-    this.nextShape = this.nextShape.bind(this);
-    this.refreshShape = this.refreshShape.bind(this);
+    this.demoManager = demoManager;    
+    // Binds all methods to "this" (Why do we have to do that? Javascript drawbacks !)
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach(key => {
+      if('function' === typeof this[key])
+        this[key] = this[key].bind(this);
+    })
   }
 
   // Loads resources and returns a Promise
@@ -21,7 +18,6 @@ class RedSector {
 
   // Initialize the demo (all resources are already loaded)
   // Initialize scrolltexts here (for example)
-  // For each balls palets
   init() {
     let im;
     this.text.initTile(640,14);
@@ -29,6 +25,7 @@ class RedSector {
     this.zoomFactor = 0.35;
     this.rotation = true;
     
+    // Colorize balls
     this.balls = [];
     "300,400,500,600,700/033,044,055,066,077/333,444,555,666,777/302,403,504,605,706/230,340,450,560,670/311,412,513,614,715/320,321,522,623,724/230,330,431,532,733/230,340,440,541,651/030,040,050,060,070/320,430,540,650,760/013,014,015,026,027/023,034,045,056,067/522,533,644,755,766/130,240,350,460,570"
     .split('/').forEach(p => {
@@ -63,17 +60,98 @@ class RedSector {
     tmp.contex.drawImage(this.allballs.img, 0,186,54,54, 0,0,54,54);
     this.balls.push(new image(tmp.canvas.toDataURL('image/png')));
     
+    // Shapes repository
     this.shapeManager = new ShapeManager();
     this.listShapes = this.shapeManager.getNames();
     this.ctrShapes = -1; // TODO : -1
     
     this.playground = new canvas(640,386);
-    this.the3d = new codef3D(this.playground, 600, 40, 1, 1600 );
+    this.the3d = new codef3D(this.playground, 600+850, 40, 1, 1600 );
     this.nextShape();
     
+    // Translation and rotation speed
+    this.trSpeed = {x:0,y:0,z:0};
+    this.rtSpeed = {x:0,y:0,z:0};
+    this.anim = [];
+    // Action table
+    // shape: shape name to load
+    // pos: starting position
+    // initRot: initial rotation 
+    // rot: rotation speed
+    // tr: translation speed
+    // anim: table of animation effect classes to call
+    // frames: number of frames (at 50 hz, converted to number of frames for 60 hz)
+    // text: text indice to display
+    // init: function to call at the beginning of the effect
+    // Missing property means "no change" for this property
+    this.actions = [
+      {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
+      {pos:[0,0,850], tr:[0,0,0], frames:60, anim:['Z_150()'], text:1},
+      {text:2, frames:60}, {text:3, frames:60}, 
+      {anim:["morphingTo(this.shape, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, init:()=>{this.shape.p = this.shape.p.map(p => ({...p, img:37}))}},
+      {anim:[], text:4, frames:75},
+      {text:5, frames:75},
+      {anim:['yRotate()'], rot:[4,4,4], frames:50},
+      {text:6, frames:50},
+      {init:() => {this.anim.push(new morphingTo(this.shape, this.shapeManager.getCopyOf('tube'), 45*2.4))}, text:7, frames:45},
+      {init:() => {this.anim.pop()}, rot:[3,3,3], frames:120},
+      {shape:'tube', text:8, frames:60},
+      {init:() => {this.anim[0].incr = -0.05}, frames:30},
+      {text:9, frames:30},
+      {anim:["morphingTo(this.shape, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
+      {anim:[], text:10, frames:50},
+      {tr:[0,3,0], frames:50},
+    ];
+    this.ctrAction = -1;
+    this.nextAction();
+    
     this.running = true;
+    this.paused = false;
   }
-
+  
+  nextAction(){
+    this.ctrAction++;
+    if(this.ctrAction >= this.actions.length)
+      this.ctrAction = 0;
+    const toRad = Math.PI/180; // degree to radians
+    const toRadSpeed = toRad/2.4; // 25 to 60 fps to rotation speed
+    
+    const t = this.actions[this.ctrAction];
+    this.ctrFrames = t.frames*2.4;  // 25 fps -> 60 fps
+    if(t.shape !== undefined)  this.changeShape(t.shape);
+    if(t.pos !== undefined)    this.the3d.group.position = {x:t.pos[0], y:t.pos[1], z:t.pos[2]};
+    if(t.initRot !== undefined) this.the3d.group.rotation = {x:t.initRot[0]*toRad, y:t.initRot[1]*toRad, z:t.initRot[2]*toRad};
+    if(t.rot !== undefined)    this.rtSpeed = {x:t.rot[0]*toRadSpeed, y:t.rot[1]*toRadSpeed, z:t.rot[2]*toRadSpeed};
+    if(t.tr !== undefined)     this.trSpeed = {x:t.tr[0], y:t.tr[1], z:t.tr[2]};
+    if(t.anim)  this.anim = t.anim.map(cl => eval('new ' + cl ));
+    if(t.text !== undefined)   this.ctrTxt = t.text;
+    if(t.init !== undefined)  t.init();
+  }
+  mainEffect(){
+    // 3D
+    this.playground.clear();
+    if(this.shape.animate())
+      this.refreshShape();
+    this.the3d.draw();
+    this.playground.draw(this.can,0,14);
+    
+    this.ctrFrames--;
+    if(this.ctrFrames == 0)
+      this.nextAction();
+    else{
+      this.the3d.group.rotation.x += this.rtSpeed.x;
+      this.the3d.group.rotation.y += this.rtSpeed.y;
+      this.the3d.group.rotation.z += this.rtSpeed.z;
+      this.the3d.group.position.x += this.trSpeed.x;
+      this.the3d.group.position.y += this.trSpeed.y;
+      this.the3d.group.position.z += this.trSpeed.z;
+      if(this.anim.length){
+        let refreshNeeded = this.anim.map(effect => effect.run(this.shape, this.the3d));
+        if(refreshNeeded.some(a=>a))
+          this.refreshShape();
+      }
+    }
+  }  
   // Starts the demo and returns a Promise that will be resolved at the end
   // of the demo.
   start() {
@@ -88,75 +166,72 @@ class RedSector {
 
   // Main loop, called by Codef requestAnimFrame
   main() {
-    if (this.running) {
-      this.can.clear();
-      
-      // Horizontal lines
-      this.ctx.fillStyle="#004";
-      this.ctx.fillRect(0,382,640,18);
-      this.ctx.fillStyle="#002";
-      this.ctx.fillRect(0,378,640,4);
-      this.ctx.fillRect(0,386,640,2);
-      this.ctx.fillStyle="#000058";
-      this.ctx.fillRect(0,394,640,2);
-      
-      // 3D
-      this.playground.clear();
-      if(this.currentShape.animate())
-        this.refreshShape();
-      this.the3d.draw();
-      this.playground.draw(this.can,0,14);
-      this.text.drawTile(this.can,this.ctrTxt,0,0);
+    if(this.running) {
+      if(!this.paused){
+        this.can.clear();
+        this.blueLines();
+        this.mainEffect();
+        this.text.drawTile(this.can,this.ctrTxt,0,0);
+        this.reflection();
 
-      if(this.rotation){
-        this.the3d.group.rotation.x+=0.01;
-        this.the3d.group.rotation.y+=0.02;
-        this.the3d.group.rotation.z+=0.04;
+        // TODO : delete
+        this.ctx.font = 'bold 12px serif';
+        this.ctx.fillStyle = "#FFF";
+        this.ctx.textBaseline = 'top';
+        for(let f=0;f<this.balls.length;f+=8){
+          this.balls[f].draw(this.can,0,f*2);
+          this.ctx.fillText(f,16,f*2)
+        }
+        this.ctx.font = 'bold 24px serif';
+        this.ctx.fillText(this.ctrTxt,0,300);
+        // end delete
       }
-      
-      // Reflection
-      this.ctx.fillStyle = "#00007A";
-      this.ctx.fillRect(0,400,640,80);
-      this.ctx.save();
-      this.ctx.scale(1,-1);
-      this.ctx.drawImage(this.playground.canvas, 0,384,640,-240, 0,-480,640,80);
-      this.ctx.restore();
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
-      this.ctx.fillRect(0,400,640,80);
-
-      // TODO : delete
-      this.ctx.font = 'bold 12px serif';
-      this.ctx.fillStyle = "#FFF";
-      this.ctx.textBaseline = 'top';
-      for(let f=0;f<this.balls.length;f+=8){
-        this.balls[f].draw(this.can,0,f*2);
-        this.ctx.fillText(f,16,f*2)
-      }
-      // end delete
-      
       window.requestAnimFrame(this.main);
     } else {
       this.end();
     }
   }
+  blueLines(){
+    // Horizontal lines
+    this.ctx.fillStyle="#004";
+    this.ctx.fillRect(0,382,640,18);
+    this.ctx.fillStyle="#002";
+    this.ctx.fillRect(0,378,640,4);
+    this.ctx.fillRect(0,386,640,2);
+    this.ctx.fillStyle="#000058";
+    this.ctx.fillRect(0,394,640,2);
+  }
+  reflection(){
+    // Reflection
+    this.ctx.fillStyle = "#00007A";
+    this.ctx.fillRect(0,400,640,80);
+    this.ctx.save();
+    this.ctx.scale(1,-1);
+    this.ctx.drawImage(this.playground.canvas, 0,384,640,-240, 0,-480,640,80);
+    this.ctx.restore();
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
+    this.ctx.fillRect(0,400,640,80);
+  }
   nextShape(){
     this.ctrShapes++;
     if(this.ctrShapes >= this.listShapes.length)
       this.ctrShapes = 0;
-    const shapeName = this.listShapes[this.ctrShapes];
-    console.log("Shape: " + shapeName);
-    this.currentShape = this.shapeManager.getCopyOf(shapeName);
-    console.log(this.currentShape);
+    this.changeShape(this.listShapes[this.ctrShapes]);
+  }
+  changeShape(name){
+    this.shape = this.shapeManager.getCopyOf(name);
     this.refreshShape();
   }
   refreshShape(){
     const saveRotation = Object.assign({}, this.the3d.group.rotation);
+    const savePosition = Object.assign({}, this.the3d.group.position);
     this.the3d.scene.remove(this.the3d.group);
     this.the3d.group = new THREE.Object3D();
     this.the3d.group.scale.x = this.the3d.group.scale.y = this.the3d.group.scale.z = this.zoomFactor;
     this.the3d.group.rotation = saveRotation;
+    this.the3d.group.position = savePosition;
     this.the3d.scene.add(this.the3d.group);
-    this.the3d.vectorball_img(this.currentShape.p, this.balls );    
+    this.the3d.vectorball_img(this.shape.p, this.balls );    
   }
   stop() {
     this.running = false;
@@ -178,12 +253,91 @@ class RedSector {
       this.nextShape();
     }
     // TODO : delete
-    if (event.key === 'x') {
-      this.currentShape.p[0].img = 57;
-      this.refreshShape();
-    }
     if (event.key === 'p') {
-      this.rotation = !this.rotation;
+      this.paused = !this.paused;
     }
+    if (event.key === 'l') {
+      console.log({shape:this.shape});
+    }
+    if (event.key === 't') {
+      console.log({three:this.the3d});
+    }
+  }
+}
+
+// Animation classes
+// run returns true if vertices have been changed
+class Z_150{
+  constructor(){
+    this.ctr = 0;
+    this.ctrAmp = 0;
+    this.run = this.run.bind(this);
+  }
+  run(shape, three){
+    const result = [];
+    let a = this.ctr, b, i=0;
+    for(let y=0; y<8; y++){
+      b = a;
+      for(let x=0; x<8; x++){
+        let p = shape.p[i++];
+        result.push({
+          ...p,
+          z: 200*Math.sin(this.ctrAmp)*Math.cos(b)
+        });
+        b += Math.PI/10;
+      }
+      a += Math.PI/10;
+    }
+    this.ctr += Math.PI/35;
+    this.ctrAmp += Math.PI/40;
+    shape.p = result;
+    return true;
+  }
+}
+
+class morphingTo{
+  constructor(fromShape, toShape, nbFrames){
+    this.steps = fromShape.p.map((p,i) => ({
+      x: (toShape.points[i].x - p.x) / nbFrames,
+      y: (toShape.points[i].y - p.y) / nbFrames,
+      z: (toShape.points[i].z - p.z) / nbFrames,
+    }));
+    this.run = this.run.bind(this);
+  }
+  run(shape, three){
+    shape.p = shape.p.map((p,i) => ({
+      ...p,
+      x: p.x + this.steps[i].x,
+      y: p.y + this.steps[i].y,
+      z: p.z + this.steps[i].z,
+    }));
+    return true;
+  }
+}
+
+class yRotate{
+  constructor(){
+    this.ctr = 0;
+    this.ratio = 0;
+    this.incr = 0.05;
+    this.run = this.run.bind(this);
+  }
+  run(shape,three){
+    three.group.position = {
+      x: this.ratio*100*Math.cos(this.ctr),
+      y: 0,
+      z: 850 + this.ratio*100*Math.sin(this.ctr)
+    };
+    this.ctr += Math.PI/100;
+    if(this.incr>0){
+      this.ratio += this.incr;
+      if(this.ratio >= 1)
+        this.incr = 0;
+    }else if(this.incr<0){
+      this.ratio += this.incr;
+      if(this.ratio <= 0)
+        this.incr = 0;
+    }
+    return false;
   }
 }
