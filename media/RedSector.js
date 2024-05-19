@@ -101,6 +101,9 @@ class RedSector {
       {anim:["morphingTo(this.shape, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
       {anim:[], text:10, frames:50},
       {tr:[0,3,0], frames:50},
+      {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], frames:45},
+      {tr:[0,0,0], frames:100},
+      {rot:[0,-3,0], text:11, frames:150},
     ];
     this.ctrAction = -1;
     this.nextAction();
@@ -130,8 +133,8 @@ class RedSector {
   mainEffect(){
     // 3D
     this.playground.clear();
-    if(this.shape.animate())
-      this.refreshShape();
+//    if(this.shape.animate())
+//      this.refreshShape();
     this.the3d.draw();
     this.playground.draw(this.can,0,14);
     
@@ -183,7 +186,8 @@ class RedSector {
           this.ctx.fillText(f,16,f*2)
         }
         this.ctx.font = 'bold 24px serif';
-        this.ctx.fillText(this.ctrTxt,0,300);
+        this.ctx.fillText('Text: ' + this.ctrTxt,0,300);
+        this.ctx.fillText(this.ctrFrames,0,326);
         // end delete
       }
       window.requestAnimFrame(this.main);
@@ -339,5 +343,25 @@ class yRotate{
         this.incr = 0;
     }
     return false;
+  }
+}
+
+class rotors{
+  constructor(){
+    this.ctr = 0;
+    this.run = this.run.bind(this);
+  }
+  run(shape, three){
+    [80,150,210,160].forEach((radius, i) => {
+      let x = ~~(radius*Math.sin(this.ctr));
+      let z = ~~(radius*Math.cos(this.ctr));
+      shape.p[i*2].x = x;
+      shape.p[i*2].z = z-100;
+      shape.p[i*2+1].x = -x;
+      shape.p[i*2+1].z = -z-100;
+    });
+    this.ctr += 0.08;
+    
+    return true;
   }
 }
