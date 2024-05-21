@@ -80,34 +80,35 @@ class RedSector {
     // rot: rotation speed
     // tr: translation speed
     // anim: table of animation effect classes to call
-    // frames: number of frames (at 50 hz, converted to number of frames for 60 hz)
+    // frames: duration in number of frames. ST demo ran at 25 fps, wereas web navigator runs at 60 fps, so number of frames have to be multiplied by 2.4 to keep the same timing
     // text: text indice to display
     // init: function to call at the beginning of the effect
     // Missing property means "no change" for this property
     this.actions = [
+      // SQUARE
       {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
-      {pos:[0,0,850], tr:[0,0,0], frames:60, anim:['Z_150()'], text:1},
-      {text:2, frames:60}, {text:3, frames:60}, 
-      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, init:()=>{
-        this.oldProg = this.the3d.group.children[0].material.program;
+      {pos:[0,0,850], tr:[0,0,0], frames:75},
+      // RIPP_IN + RIPPLE
+      {anim:['Sinus2D()','yRotate()'], frames:80},
+      {init:()=>{this.anim[1].incr=-0.025}, frames:40},
+      {init:()=>{this.anim.pop()}, frames:120},
+      // MERGE
+      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, rot:[4,4,4], init:()=>{
         const prog = this.the3d.group.children[9].material.program;
         this.the3d.group.children.forEach(c => c.material.program = prog);
       }},
-      {anim:[], text:4, frames:75},
-      {text:5, frames:75},
-      {anim:['yRotate()'], rot:[4,4,4], frames:50},
-      {text:6, frames:50},
-      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, text:7, frames:45},
-      {init:() => {this.anim.pop()}, rot:[3,3,3], frames:120},
-      {shape:'tube', text:8, frames:60},
-      {init:() => {this.anim[0].incr = -0.05}, frames:30},
-      {text:9, frames:30},
+      {anim:[], rot:[3,3,3], frames:120},
+      {anim:['yRotate()'], frames:240},
+      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, frames:45},
+      {init:() => {this.anim.pop()}, frames:120},
+      {shape:'tube', frames:60},
+      {init:() => {this.anim[0].incr = -0.025}, frames:80},
       {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
-      {anim:[], text:10, frames:50},
+      {anim:[], frames:50},
       {tr:[0,3,0], frames:50},
-      {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], frames:45},
+      {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], rot:[0,0,0], frames:45},
       {tr:[0,0,0], frames:100},
-      {rot:[0,-3,0], text:11, frames:150},
+      {rot:[0,-3,0], frames:150},
     ];
     this.ctrAction = -1;
     this.nextAction();
@@ -121,7 +122,7 @@ class RedSector {
     if(this.ctrAction >= this.actions.length)
       this.ctrAction = 0;
     const toRad = Math.PI/180; // degree to radians
-    const toRadSpeed = toRad/2.4; // 25 to 60 fps to rotation speed
+    const toRadSpeed = toRad/2.4; // 25 to 60 fps for rotation speed
     
     const t = this.actions[this.ctrAction];
     this.ctrFrames = t.frames*2.4;  // 25 fps -> 60 fps
@@ -269,7 +270,7 @@ class RedSector {
 }
 
 // Animation classes
-class Z_150{
+class Sinus2D{
   constructor(){
     this.ctr = 0;
     this.ctrAmp = 0;
@@ -318,7 +319,7 @@ class yRotate{
   constructor(){
     this.ctr = 0;
     this.ratio = 0;
-    this.incr = 0.05;
+    this.incr = 0.025;
     this.run = this.run.bind(this);
   }
   run(three){
@@ -327,7 +328,7 @@ class yRotate{
       y: 0,
       z: 850 + this.ratio*100*Math.sin(this.ctr)
     };
-    this.ctr += Math.PI/100;
+    this.ctr += Math.PI/72;
     if(this.incr>0){
       this.ratio += this.incr;
       if(this.ratio >= 1)
