@@ -88,17 +88,21 @@ class RedSector {
       {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
       {pos:[0,0,850], tr:[0,0,0], frames:60, anim:['Z_150()'], text:1},
       {text:2, frames:60}, {text:3, frames:60}, 
-      {anim:["morphingTo(this.shape, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, init:()=>{this.shape.p = this.shape.p.map(p => ({...p, img:37}))}},
+      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, init:()=>{
+        this.oldProg = this.the3d.group.children[0].material.program;
+        const prog = this.the3d.group.children[9].material.program;
+        this.the3d.group.children.forEach(c => c.material.program = prog);
+      }},
       {anim:[], text:4, frames:75},
       {text:5, frames:75},
       {anim:['yRotate()'], rot:[4,4,4], frames:50},
       {text:6, frames:50},
-      {init:() => {this.anim.push(new morphingTo(this.shape, this.shapeManager.getCopyOf('tube'), 45*2.4))}, text:7, frames:45},
+      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, text:7, frames:45},
       {init:() => {this.anim.pop()}, rot:[3,3,3], frames:120},
       {shape:'tube', text:8, frames:60},
       {init:() => {this.anim[0].incr = -0.05}, frames:30},
       {text:9, frames:30},
-      {anim:["morphingTo(this.shape, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
+      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
       {anim:[], text:10, frames:50},
       {tr:[0,3,0], frames:50},
       {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], frames:45},
@@ -148,11 +152,8 @@ class RedSector {
       this.the3d.group.position.x += this.trSpeed.x;
       this.the3d.group.position.y += this.trSpeed.y;
       this.the3d.group.position.z += this.trSpeed.z;
-      if(this.anim.length){
-        let refreshNeeded = this.anim.map(effect => effect.run(this.shape, this.the3d));
-        if(refreshNeeded.some(a=>a))
-          this.refreshShape();
-      }
+      if(this.anim.length)
+        this.anim.forEach(a => a.run(this.the3d));
     }
   }  
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -216,6 +217,7 @@ class RedSector {
     this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
     this.ctx.fillRect(0,400,640,80);
   }
+  // TODO : delete
   nextShape(){
     this.ctrShapes++;
     if(this.ctrShapes >= this.listShapes.length)
@@ -261,61 +263,54 @@ class RedSector {
       this.paused = !this.paused;
     }
     if (event.key === 'l') {
-      console.log({shape:this.shape});
-    }
-    if (event.key === 't') {
-      console.log({three:this.the3d});
+      console.log(this.the3d);
     }
   }
 }
 
 // Animation classes
-// run returns true if vertices have been changed
 class Z_150{
   constructor(){
     this.ctr = 0;
     this.ctrAmp = 0;
     this.run = this.run.bind(this);
   }
-  run(shape, three){
-    const result = [];
+  run(three){
     let a = this.ctr, b, i=0;
     for(let y=0; y<8; y++){
       b = a;
       for(let x=0; x<8; x++){
-        let p = shape.p[i++];
-        result.push({
-          ...p,
-          z: 200*Math.sin(this.ctrAmp)*Math.cos(b)
-        });
+        three.group.children[i++].position.z = 200*Math.sin(this.ctrAmp)*Math.cos(b);
         b += Math.PI/10;
       }
       a += Math.PI/10;
     }
     this.ctr += Math.PI/35;
     this.ctrAmp += Math.PI/40;
-    shape.p = result;
-    return true;
+    three.group.position.needsUpdate = true;
   }
 }
 
 class morphingTo{
-  constructor(fromShape, toShape, nbFrames){
-    this.steps = fromShape.p.map((p,i) => ({
-      x: (toShape.points[i].x - p.x) / nbFrames,
-      y: (toShape.points[i].y - p.y) / nbFrames,
-      z: (toShape.points[i].z - p.z) / nbFrames,
+  constructor(three, toShape, nbFrames){
+    const fromShape = three.group.children;
+    this.steps = fromShape.map((p,i) => ({
+      x: (toShape.points[i].x - p.position.x) / nbFrames,
+      y: (toShape.points[i].y - p.position.y) / nbFrames,
+      z: (toShape.points[i].z - p.position.z) / nbFrames,
     }));
     this.run = this.run.bind(this);
   }
-  run(shape, three){
-    shape.p = shape.p.map((p,i) => ({
-      ...p,
-      x: p.x + this.steps[i].x,
-      y: p.y + this.steps[i].y,
-      z: p.z + this.steps[i].z,
-    }));
-    return true;
+  run(three){
+    three.group.children.forEach((c,i) => {
+      const p = c.position;
+      c.position = {
+        x: p.x + this.steps[i].x,
+        y: p.y + this.steps[i].y,
+        z: p.z + this.steps[i].z,
+      };
+    });
+    three.group.position.needsUpdate = true;    
   }
 }
 
@@ -326,7 +321,7 @@ class yRotate{
     this.incr = 0.05;
     this.run = this.run.bind(this);
   }
-  run(shape,three){
+  run(three){
     three.group.position = {
       x: this.ratio*100*Math.cos(this.ctr),
       y: 0,
@@ -342,7 +337,6 @@ class yRotate{
       if(this.ratio <= 0)
         this.incr = 0;
     }
-    return false;
   }
 }
 
@@ -351,17 +345,17 @@ class rotors{
     this.ctr = 0;
     this.run = this.run.bind(this);
   }
-  run(shape, three){
+  run(three){
+    const shape = three.group.children;
     [80,150,210,160].forEach((radius, i) => {
       let x = ~~(radius*Math.sin(this.ctr));
       let z = ~~(radius*Math.cos(this.ctr));
-      shape.p[i*2].x = x;
-      shape.p[i*2].z = z-100;
-      shape.p[i*2+1].x = -x;
-      shape.p[i*2+1].z = -z-100;
+      shape[i*2].position.x = x;
+      shape[i*2].position.z = z-100;
+      shape[i*2+1].position.x = -x;
+      shape[i*2+1].position.z = -z-100;
     });
+    three.group.position.needsUpdate = true;        
     this.ctr += 0.08;
-    
-    return true;
   }
 }
