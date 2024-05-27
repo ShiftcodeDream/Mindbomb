@@ -73,6 +73,7 @@ class RedSector {
     this.trSpeed = {x:0,y:0,z:0};
     this.rtSpeed = {x:0,y:0,z:0};
     this.anim = [];
+    this.pos = [0,0,850];
     // Action table
     // shape: shape name to load
     // pos: starting position
@@ -85,30 +86,35 @@ class RedSector {
     // init: function to call at the beginning of the effect
     // Missing property means "no change" for this property
     this.actions = [
-      // SQUARE
-      {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
-      {pos:[0,0,850], tr:[0,0,0], frames:75},
-      // RIPP_IN + RIPPLE
-      {anim:['Sinus2D()','yRotate()'], frames:80},
-      {init:()=>{this.anim[1].incr=-0.025}, frames:40},
-      {init:()=>{this.anim.pop()}, frames:120},
-      // MERGE
-      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, rot:[4,4,4], init:()=>{
-        const prog = this.the3d.group.children[9].material.program;
-        this.the3d.group.children.forEach(c => c.material.program = prog);
-      }},
-      {anim:[], rot:[3,3,3], frames:120},
-      {anim:['yRotate()'], frames:240},
-      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, frames:45},
-      {init:() => {this.anim.pop()}, frames:120},
-      {shape:'tube', frames:60},
-      {init:() => {this.anim[0].incr = -0.025}, frames:80},
-      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
-      {anim:[], frames:50},
-      {tr:[0,3,0], frames:50},
+//      // SQUARE
+//      {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
+//      {pos:[0,0,850], tr:[0,0,0], frames:75},
+//      // RIPP_IN + RIPPLE
+//      {anim:['Sinus2D()','yRotate()'], frames:80},
+//      {init:()=>{this.anim[1].incr=-0.025}, frames:40},
+//      {init:()=>{this.anim.pop()}, frames:120},
+//      // MERGE
+//      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, rot:[4,4,4], init:()=>{
+//        const prog = this.the3d.group.children[9].material.program;
+//        this.the3d.group.children.forEach(c => c.material.program = prog);
+//      }},
+//      {anim:[], rot:[3,3,3], frames:120},
+//      {anim:['yRotate()'], frames:240},
+//      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, frames:45},
+//      {init:() => {this.anim.pop()}, frames:120},
+//      {shape:'tube', frames:60},
+//      {init:() => {this.anim[0].incr = -0.025}, frames:80},
+//      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
+//      {anim:[], frames:50},
+//      {tr:[0,3,0], frames:50},
       {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], rot:[0,0,0], frames:45},
-      {tr:[0,0,0], frames:100},
-      {rot:[0,-3,0], frames:150},
+      {tr:[0,0,0], frames:60},
+      {rot:[0,-3,0], frames:90},
+      {rot:[1,0,1], frames:20},
+      {init:()=>{this.anim.push(new yRotate())}, rot:[0,Math.PI,0], frames:240},
+      {rot:[Math.PI,Math.PI,0], frames:220},
+      {init:()=>{this.anim.pop()}, rot:[0,0,0], frames:20},
+      {tr:[0,3,0], frames:45},
     ];
     this.ctrAction = -1;
     this.nextAction();
@@ -286,8 +292,8 @@ class Sinus2D{
       }
       a += Math.PI/10;
     }
-    this.ctr += Math.PI/35;
-    this.ctrAmp += Math.PI/40;
+    this.ctr += Math.PI/55;
+    this.ctrAmp += Math.PI/60;
     three.group.position.needsUpdate = true;
   }
 }
@@ -328,7 +334,7 @@ class yRotate{
       y: 0,
       z: 850 + this.ratio*100*Math.sin(this.ctr)
     };
-    this.ctr += Math.PI/72;
+    this.ctr += Math.PI/144;
     if(this.incr>0){
       this.ratio += this.incr;
       if(this.ratio >= 1)
