@@ -88,50 +88,56 @@ class RedSector {
     this.actions = [
       // SQUARE
       {shape:'square', pos:[0,320,850], initRot:[30,30,30], rot:[3,3,3], tr:[0,-3,0], anim:[], frames:45, text:0},
-      {pos:[0,0,850], tr:[0,0,0], frames:75},
+      {pos:[0,0,850], tr:[0,0,0], frames:45},
+      {text:1, frames:30},
       // RIPP_IN + RIPPLE
-      {anim:['Sinus2D()','yRotate()'], frames:80},
-      {init:()=>{this.anim[1].incr=-0.025}, frames:40},
+      {anim:['Sinus2D()','yRotate()'], frames:60},
+      {text:2, frames:60},
+      {init:()=>{this.anim[1].incr=-0.025}, text:3, frames:60},
       {init:()=>{this.anim.pop()}, frames:120},
       // MERGE
       {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('sphere'), 45*2.4)"], frames:45, rot:[4,4,4], init:()=>{
         const prog = this.the3d.group.children[9].material.program;
         this.the3d.group.children.forEach(c => c.material.program = prog);
       }},
-      {anim:[], rot:[3,3,3], frames:120},
+      {anim:[], rot:[3,3,3], text:4, frames:80},
+      {text:5, frames:40},
       {anim:['yRotate()'], frames:240},
-      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, frames:45},
-      {init:() => {this.anim.pop()}, frames:120},
       // TUBE
-      {shape:'tube', frames:60},
+      {init:() => {this.anim.push(new morphingTo(this.the3d, this.shapeManager.getCopyOf('tube'), 45*2.4))}, text:6, frames:45},
+      {init:() => {this.anim.pop()}, frames:60},
+      {shape:'tube', text:7, frames:60},
       {init:() => {this.anim[0].incr = -0.025}, frames:80},
-      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], frames:60},
-      {anim:[], frames:50},
+      {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('square'), 60*2.4)"], text:8, frames:60},
+      {anim:[], text:9, frames:50},
       {tr:[0,3,0], frames:50},
       // HELI
-      {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], rot:[0,0,0], frames:45},
+      {shape:'heli', anim:['rotors()'], pos:[0,320,850], initRot:[180,0,0], tr:[0,-3,0], rot:[0,0,0], text:10, frames:45},
       {tr:[0,0,0], frames:60},
-      {rot:[0,-3,0], frames:90},
+      {rot:[0,-3,0], frames:30},
+      {text:11, frames:60},
       {rot:[1,0,1], frames:20},
       {init:()=>{this.anim.push(new yRotate())}, rot:[0,Math.PI,0], frames:240},
-      {rot:[Math.PI,Math.PI,0], frames:220},
+      {rot:[Math.PI,Math.PI,0], text:12, frames:220},
       {init:()=>{this.anim.pop()}, rot:[0,0,0], frames:20},
       {tr:[0,3,0], frames:45},
       // ANIMAL
-      {shape:'animal', pos:[0,320,850], initRot:[180,90,0], tr:[0,-3,0], rot:[4,4,0], anim:[], frames:45},
+      {shape:'animal', pos:[0,320,850], initRot:[180,90,0], tr:[0,-3,0], rot:[4,4,0], anim:[], text:13, frames:45},
       {tr:[0,0,0], rot:[0,3,0], frames:180},
-      {rot:[3,3,3], frames:120},
+      {rot:[3,3,3], text:14, frames:120},
       {tr:[0,-1.25,0], frames:120},
-      {shape:'bubs', pos:[0,-320,850], rot:[0,5,0], tr:[0,1.5,0], frames:240},
+      // BUBLES
+      {shape:'bubs', pos:[0,-320,850], rot:[0,5,0], tr:[0,1.5,0], text:15, frames:240},
       // MAN
-      {shape:'man', pos:[0,320,850], rot:[0,4,0], tr:[0,-3,0], frames:45},
-      {tr:[0,0,0], rot:[2,4,2], frames:360},
+      {shape:'man', pos:[0,320,850], rot:[0,4,0], tr:[0,-3,0], text:16, frames:45},
+      {tr:[0,0,0], rot:[2,4,2], frames:240},
+      {text:17, frames:120},
       {tr:[0,3,0], frames:45},
       // WOMAN
       {shape:'woman', pos:[0,320,850], rot:[-2,4,-2], tr:[0,-3,0], frames:45},
-      {tr:[0,0,0], rot:[0,4,2], frames:360},
+      {tr:[0,0,0], rot:[0,4,2], text:18, frames:360},
       {tr:[0,-3,0], rot:[3,4,3], frames:45},
-      {init:()=>{this.changeShape('tardi',1)}, pos:[0,0,850], initRot:[0,0,0], rot:[0,3,0], tr:[0,0,0], frames:20},
+      {init:()=>{this.changeShape('tardi',1)}, pos:[0,0,850], initRot:[0,0,0], rot:[0,3,0], tr:[0,0,0], text:19, frames:20},
       {init:()=>{this.changeShape('tardi',5)}, frames:10},
       {init:()=>{this.changeShape('tardi',13)}, frames:10},
       {init:()=>{this.changeShape('tardi',21)}, frames:10},
@@ -139,16 +145,18 @@ class RedSector {
       {init:()=>{this.changeShape('tardi',37)}, frames:10},
       {init:()=>{this.changeShape('tardi',45)}, frames:10},
       // TARDI
-      {shape:'tardi', frames:180},
-      {rot:[-3,3,0], anim:['yRotate()'], frames:240},
-      {tr:[0,-2,0], frames:120},
+      {shape:'tardi', frames:90},
+      {text:20, frames:90},
+      {rot:[-3,3,0], anim:['yRotate()'], text:21, frames:120},
+      {tr:[0,-2,0], text:22, frames:120},
       // SPIDER
-      {shape:'spider', tr:[0,0,0], pos:[0,0,850], initRot:[0,180,0], rot:[0,3,0], anim:['bounce()'], frames:215},
-      {anim:[], frames:150},
-      {tr:[0,3,0], rot:[0,2,0], frames:45},
+      {shape:'spider', tr:[0,0,0], pos:[0,-900,850], initRot:[0,180,0], rot:[0,3,0], anim:['bounce()'], text:23, frames:215},
+      {anim:[], text:24, frames:75},
+      {text:25, frames:75},      
+      {tr:[0,3,0], rot:[0,2,0], text:26, frames:45},
       // CUBE
       {shape:'cube', pos:[0,320,850], rot:[4,4,4], tr:[0,-3,0], frames:45},
-      {tr:[0,0,0], rot:[3,3,3], frames:240},
+      {tr:[0,0,0], rot:[3,3,3], text:27, frames:240},
       {anim:["morphingTo(this.the3d, this.shapeManager.getCopyOf('spacecube'), 45*2.4)"], frames:45},
       {anim:[], rot:[3,3,3], frames:120},
       {tr:[0,3,0], rot:[4,4,4], frames:45},
@@ -428,7 +436,6 @@ class bounce{
     }
     this.curve = curve;
     this.run = this.run.bind(this);
-    console.log(curve.length);
   }
   run(three){
     three.group.position.y = this.curve[this.ctr++];
