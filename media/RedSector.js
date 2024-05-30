@@ -11,8 +11,8 @@ class RedSector {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['AllBalls.png', 'text.png', 'shapes-data.js'])).then(data => {
-      [this.allballs, this.text, this.script] = data;
+    return Promise.all(this.demoManager.loadResource(['AllBalls.png', 'text.png', 'shapes-data.js', 'RedSector.sndh'])).then(data => {
+      [this.allballs, this.text, this.script, this.zik] = data;
     });
   }
 
@@ -63,11 +63,9 @@ class RedSector {
     // Shapes repository
     this.shapeManager = new ShapeManager();
     this.listShapes = this.shapeManager.getNames();
-    this.ctrShapes = -1; // TODO : -1
     
     this.playground = new canvas(640,386);
     this.the3d = new codef3D(this.playground, 600+850, 40, 1, 1600 );
-    this.nextShape();
     
     // Translation and rotation speed
     this.trSpeed = {x:0,y:0,z:0};
@@ -166,6 +164,7 @@ class RedSector {
     
     this.running = true;
     this.paused = false;
+    this.zik.changeTrack(2);
   }
   
   nextAction(){
@@ -189,8 +188,6 @@ class RedSector {
   mainEffect(){
     // 3D
     this.playground.clear();
-//    if(this.shape.animate())
-//      this.refreshShape();
     this.the3d.draw();
     this.playground.draw(this.can,0,14);
     
@@ -216,6 +213,7 @@ class RedSector {
       this.can = new canvas(640, 480, "main");
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -229,19 +227,6 @@ class RedSector {
         this.mainEffect();
         this.text.drawTile(this.can,this.ctrTxt,0,0);
         this.reflection();
-
-        // TODO : delete
-        this.ctx.font = 'bold 12px serif';
-        this.ctx.fillStyle = "#FFF";
-        this.ctx.textBaseline = 'top';
-        for(let f=0;f<this.balls.length;f+=8){
-          this.balls[f].draw(this.can,0,f*2);
-          this.ctx.fillText(f,16,f*2)
-        }
-        this.ctx.font = 'bold 24px serif';
-        this.ctx.fillText('Text: ' + this.ctrTxt,0,300);
-        this.ctx.fillText(this.ctrFrames,0,326);
-        // end delete
       }
       window.requestAnimFrame(this.main);
     } else {
@@ -269,13 +254,6 @@ class RedSector {
     this.ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
     this.ctx.fillRect(0,400,640,80);
   }
-  // TODO : delete
-  nextShape(){
-    this.ctrShapes++;
-    if(this.ctrShapes >= this.listShapes.length)
-      this.ctrShapes = 0;
-    this.changeShape(this.listShapes[this.ctrShapes]);
-  }
   changeShape(name, filterDots=0){
     this.shape = this.shapeManager.getCopyOf(name);
     if(filterDots){
@@ -301,6 +279,7 @@ class RedSector {
   // removes event listeners before notifying the menu screen that the demo is finished
   end() {
     document.body.removeEventListener('keydown', this.onKeyPressed);
+    this.zik.stop();
     this.endCallback();
   }
 
@@ -309,16 +288,6 @@ class RedSector {
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
-    }
-    if (event.key === 'n') {
-      this.nextShape();
-    }
-    // TODO : delete
-    if (event.key === 'p') {
-      this.paused = !this.paused;
-    }
-    if (event.key === 'l') {
-      console.log(this.the3d);
     }
   }
 }
@@ -443,26 +412,3 @@ class bounce{
       this.ctr = 0;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
