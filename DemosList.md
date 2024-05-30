@@ -1,7 +1,7 @@
 | num | Javascript File | Demo Title | Who works on this screen? | Status
 | - | --- | --- | --- | --- |
 | 0 | menuScreen.js | THE MAIN MENU | Shiftcode | Done
-| 1 | RedSector.js | THE RED SECTOR DEMO | Shiftcode | WIP
+| 1 | RedSector.js | THE RED SECTOR DEMO | Shiftcode | Done
 | 2 | LandScroll.js | THE LANDSCAPE SCREEN | 
 | 3 | DiMindBomb.js | THE DIGITAL INSANITY GUEST SCREEN NUMBER 1 | Shiftcode | Done
 | 4 | MovingBack.js | THE MOVING BACKGROUND SCREEN | Mellowman
@@ -12,7 +12,7 @@
 | 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
 | 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | 
-| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | 
+| 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | WIP
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | 
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | 
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
