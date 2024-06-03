@@ -8,13 +8,15 @@ class Sinus {
     this.end = this.end.bind(this);
     this.drawDots = this.drawDots.bind(this);
     this.nextFrame = this.nextFrame.bind(this);
+    this.bigScroller = this.bigScroller.bind(this);
+    this.littleScroller = this.littleScroller.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['SinBacks.png'])).then(data => {
-      [this.backs] = data;
+    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png'])).then(data => {
+      [this.backs, this.font] = data;
     });
   }
 
@@ -64,6 +66,14 @@ class Sinus {
       fig.push(fig1[0]);
     }
     this.frames.push(fig);
+    
+    this.scrollCan = new canvas(40,20);
+    this.font.initTile(20,20,32);
+    this.scrolltext = new scrolltext_horizontal();
+    this.scrolltext.scrtxt= "YEAH!!!   NOW THIS IS WHAT I CALL A NICE SCREEN.   WHEN I FIRST WROTE THIS I WAS NOT THAT HAPPY WITH IT BY NOW AFTER A FEW MINOR IMPROVEMNENTS I THINK IT LOOKS REALLY GOOD.. IT USES THE SAME BIGSCROLL ROUTINE AS MY PARALLAX SCROLL (SORRY I AM RATHER LAZY!!) BUT THE SINUS DOTS MAKE UP FOR THIS I THINK.   THE BAR AT THE TOP LOOKS NICE TOO AND WOULD YOU BELIEVE THAT FOR ONCE IT WORKED EXACTLY  RIGHT THE VERY FIRST TIME THAT I WROTE IT!!   I THINK THIS MUST BE SOME SORT OF RECORD FOR ME.  ITS USUALLY AT LEAST THE FOURTH ATTEMPT BEFORE IT DOES NOT EVEN BOMB OUT!!!.  I WAS RATHER PISSED OFF AT A RECENT SHOW WHEN I DISCOVERED THAT SOMEONE WHO I HAD GIVEN A COPY OF MY PARALLAX SCREEN TO AND ALSO INVITED TO WRITE A SCREEN FOR THIS DEMO, HAD PROMPTLY RIPPED OF ALL THE ROUTINES FROM THE SCREEN AND THEN PUT THE SCREEN BACK TOGETHER AND CALLED IT HIS  OWN SAYING THAT, THE LOST BOYS WROTE THIS FIRST OF ALL BUT I HAVE IMPROVED IT. SO I SEND HEART FELT FUCKING GREETINGS TO GRIFF OF THE RESISTANCE, THE KID IS A REAL LITTLE SHIT AND IF YOU EVER COME ACROSS HIM THEN WHAT EVER YOU DO DO NOT GIVE HIM ANY OF YOUR CODE AND PREFERABLY DO NOT EVEN SWAP WITH HIM, HE IS NOT TO BE TRUSTED!!!  ANYWAY JUST TO BE ANNOYING I DECIDED TO TAKE MY PARA SCROLL SCREEN APART AND SPEED IT UP AND MAKE IT UNIMPROVABLE. BY THE WAY GRIFF IS TOTALLY INCAPABLE OF WRITING HIS OWN CODE, HE CAN ONLY RIP OFF OTHER PEOPLES CODE AND THEN USE HIS MEAGER SKILLS TO SPEED IT UP, YOU SHOULD SEE THE SCREEN THAT HE WROTE FOR THIS DEMO.  IT WAS A TOTAL RIP OFF OF THE ORIGINAL TWIST SCROLL THAT I WROTE ABOUT 18 MONTHS AGO, HE HAD SPED IT UP OF COURSE BUT ANYONE WITH AN INSTRUCTION TIMINGS LEAFLET COULD DO THAT!!!  AS YOU CAN PROBABLY READ  I AM VERY PISSED OFF WITH THIS GUY. I DO NOT OBJECT TO PEOPLE USING MY IDEAS, IN FACT IF THEY ARE MY FRIENDS THEN I AM MORE THAN HAPPY TO GIVE CODE TO THEM SO THAT THEY MAY LEARN (OR NOT) FROM IT. WHAT GRIFF DOES NOT SEEM  TO REALISE IS THAT IT IS ONE THING TO SPEED UP OTHER PEOPLES CODE BUT ANOTHER THING TO WRITE YOUR OWN. SO UP YOURS CAPTAIN FUCK FLAPS, YOU WIN THE LOST BOYS PRIZE FOR SHITHEADS.  THIS WAS MANIKIN GETTING IT OFF HIS CHEST  ON 17TH JANUARY 1990.   SORRY IF YOU WERE BORED BUT IT NEEDED TO BE SAID!!!! THE DATE IS NOW 27TH MARCH 1990 AND I HAVE NEARLY FINISHED THE LOST BOYS MINDBOMB AT VERY LONG LAST. I AM JUST ENCRYPTING AND PACKING ALL OF THE SCREENS ONTO THE DISK AND IT LOOKS LIKE THERE MAY STILL BE SOME SPACE ON OUR DISK,  SO I GUESS THIS MEANS THAT I MAY HAVE TO WRITE YET ANOTHER SCREEN IN ORDER TO FILL UP THE LAST FEW SECTORS OF DISK SPACE!!  WE HAVE JUST NOW DECIDED TO SWAP THE PACKER THAT WE WERE USING. IT DOES PACK QUITE CONSIDERABLY BETTER THAN THE  ONE WE WERE USING BUT IT DOES UNFORTUNATELY MEAN THAT I HAVE MY WORK CUT OUT RE-PACKING ALL OF OUR PROGRAMS. IT DOES NOW MEAN HOWEVER THAT WE CAN GET ALMOST 2 MEGABYTES OF PACKED SCREENS ON THE DISK, MAKING THIS I THINK THE BIGGEST DEMO  IN THE HISTORY OF THE ST, AND WHAT IS ALMOST MORE AMAZING IS THAT I WROTE ALMOST ALL OF IT!!!! THERE NOW WHO HAS A MEGA EGO NOW THEN.  WE TRULY BELIEVE THAT WE HAVE CREATED THE BIGGEST AND BEST SINGLE CREW (MOSTLY) DEMO ON THE ST.  ITRULY HOPE THAT YOU AGREE WITH ME. IF YOU HAVE ANY DONATIONS FOR OUR HARD WORK, AND BELIEVE ME IT REALLY HAS BEEN HARD. (WE STARTED ON THIS OVER 1 YEAR AGO, IMMEDIATELY AFTER THE RELEASE OF THE DEF DEMO.) THE PLEASE SEND THEM TO US AT  THE FOLLOWING ADDRESS    22 OXFORD RD, TEDDINGTON, MIDDX, TW11 OPZ, ENGLAND.  OK ITS THAT TIME AGAIN, ITS TIME TO WRAP ...................             ";
+    this.scrolltext.init(this.scrollCan, this.font, 1);
+    this.bigScrollCan = new canvas(640,200);
+    this.bigScrollCan.contex.imageSmoothingEnabled = false;
   }
 
   rotate(angles, figure) {
@@ -141,7 +151,9 @@ class Sinus {
       if(!this.paused){
         this.can.clear();
         this.ctx.drawImage(this.backs.img, 0,0,1,200, 0,200,640,200);
+        this.bigScroller();
         this.drawDots();
+        this.littleScroller();
       }
       window.requestAnimFrame(this.main);
     } else {
@@ -149,6 +161,30 @@ class Sinus {
     }
   }
 
+  bigScroller(){
+    this.scrollCan.clear();
+    this.bigScrollCan.clear();
+    this.scrolltext.draw(0);
+    
+    const big = this.bigScrollCan.contex;
+    big.globalCompositeOperation = "source-over";
+    big.drawImage(this.scrollCan.canvas, 0,0,40,20, 0,0,640,200);
+    big.globalCompositeOperation = "source-in";
+    big.drawImage(this.backs.img, 1,0,1,200, 0,0,640,200);
+    this.bigScrollCan.draw(this.can,0,100);
+  }
+  
+  littleScroller(){
+    this.bigScrollCan.clear();
+    const li = this.bigScrollCan.contex;
+    li.globalCompositeOperation = "source-over";
+    for(let ys=20, yd=0; ys>=0; ys--,yd+=4)
+      li.drawImage(this.scrollCan.canvas, 0,ys,40,1, 0,yd,640,4);
+    li.globalCompositeOperation = "source-in";
+    li.drawImage(this.backs.img, 0,200,1,80, 0,0,640,80);
+    this.bigScrollCan.draw(this.can, 0,322);
+  }
+  
   stop() {
     this.running = false;
   }
