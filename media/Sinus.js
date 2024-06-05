@@ -10,13 +10,14 @@ class Sinus {
     this.nextFrame = this.nextFrame.bind(this);
     this.bigScroller = this.bigScroller.bind(this);
     this.littleScroller = this.littleScroller.bind(this);
+    this.roller = this.roller.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png'])).then(data => {
-      [this.backs, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png', 'SinScroll.png'])).then(data => {
+      [this.backs, this.font, this.roll] = data;
     });
   }
 
@@ -30,6 +31,7 @@ class Sinus {
     this.dotsCan = new canvas(180,180);
     this.dotsZoom = 2.3;
     this.paused = false;
+    this.ctrRoll = 0;
     
     // 3 circles
     fig = [];
@@ -66,6 +68,14 @@ class Sinus {
       fig.push(fig1[0]);
     }
     this.frames.push(fig);
+    
+    this.maskCan = new canvas(640,94);
+    new grad(this.maskCan, [
+      {offset:0.0, color:'#000000EE'},
+      {offset:0.3, color:'#00000000'},
+      {offset:0.7, color:'#00000000'},
+      {offset:1.0, color:'#000000EE'}
+    ]).drawH();
     
     this.scrollCan = new canvas(40,20);
     this.font.initTile(20,20,32);
@@ -154,6 +164,7 @@ class Sinus {
         this.bigScroller();
         this.drawDots();
         this.littleScroller();
+        this.roller();
       }
       window.requestAnimFrame(this.main);
     } else {
@@ -183,6 +194,24 @@ class Sinus {
     li.globalCompositeOperation = "source-in";
     li.drawImage(this.backs.img, 0,200,1,80, 0,0,640,80);
     this.bigScrollCan.draw(this.can, 0,322);
+  }
+  
+  roller(){
+    let ys=this.ctrRoll, yd=0;
+    [8,8,8,4,4,4,2,2].forEach(add=> {
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+      yd += 2;
+      ys = (ys + add) % 400;
+    })
+    for(;yd<94-16; yd+=2, ys=(ys+2)%400)
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+    [2,2,4,4,4,8,8,8].forEach(add=> {
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+      yd += 2;
+      ys = (ys + add) % 400;
+    })
+    this.maskCan.draw(this.can,0,0);
+    this.ctrRoll++;
   }
   
   stop() {
