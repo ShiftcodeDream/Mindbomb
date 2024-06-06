@@ -16,8 +16,8 @@ class Sinus {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png', 'SinScroll.png'])).then(data => {
-      [this.backs, this.font, this.roll] = data;
+    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png', 'SinScroll.png', 'Sinus.ym'])).then(data => {
+      [this.backs, this.font, this.roll, this.preload] = data;
     });
   }
 
@@ -151,6 +151,8 @@ class Sinus {
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
       this.interval = setInterval(this.nextFrame, 12000);
+      this.zik = new music('YM');
+      this.zik.LoadAndRun(this.demoManager.basepath + 'Sinus.ym');
       window.requestAnimFrame(this.main);
     });
   }
@@ -222,6 +224,7 @@ class Sinus {
   end() {
     document.body.removeEventListener('keydown', this.onKeyPressed);
     clearInterval(this.interval);
+    stopCodefMusic();
     this.endCallback();
   }
 
