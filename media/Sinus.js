@@ -128,7 +128,7 @@ class Sinus {
       this.dotsCan.contex.fillStyle = c;
       this.dotsCan.contex.fillRect(~~(90 + p.x * this.dotsZoom), ~~(90 + p.y * this.dotsZoom), 2,2);
     });
-    [40, 232, 424].forEach(x => this.dotsCan.draw(this.can, x, 150));
+    [104, 298, 488].forEach(x => this.dotsCan.draw(this.can, x, 214));
     
     // ... and shadows
     this.dotsCan.clear();
@@ -136,9 +136,8 @@ class Sinus {
     this.frames[this.ctrFrame].forEach(p => {
       this.dotsCan.contex.fillRect(~~(90 + p.x * this.dotsZoom), ~~(90 + p.z * this.dotsZoom / 3), 2,2);
     });
-    [40, 232, 424].forEach(x => this.dotsCan.draw(this.can, x, 250));
+    [104, 298, 488].forEach(x => this.dotsCan.draw(this.can, x, 314));
     
-//    this.rotate({x:0.03, y:0.035, z:0.0128}, this.frames[this.ctrFrame]);    
     this.rotate({x:-Math.PI/144, y:-Math.PI/72, z:-Math.PI/108}, this.frames[this.ctrFrame]);    
   }
   
@@ -147,7 +146,7 @@ class Sinus {
   start() {
     return new Promise(endCallback => {
       this.endCallback = endCallback;
-      this.can = new canvas(640, 400, "main");
+      this.can = new canvas(768, 540, "main");
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
       this.interval = setInterval(this.nextFrame, 12000);
@@ -162,7 +161,9 @@ class Sinus {
     if (this.running) {
       if(!this.paused){
         this.can.clear();
-        this.ctx.drawImage(this.backs.img, 0,0,1,200, 0,200,640,200);
+        this.ctx.drawImage(this.backs.img, 0,0,1,200, 0,264,768,200);
+        this.ctx.fillStyle = "#0000E0";
+        this.ctx.fillRect(0,464,768,76);
         this.bigScroller();
         this.drawDots();
         this.littleScroller();
@@ -184,7 +185,7 @@ class Sinus {
     big.drawImage(this.scrollCan.canvas, 0,0,40,20, 0,0,640,200);
     big.globalCompositeOperation = "source-in";
     big.drawImage(this.backs.img, 1,0,1,200, 0,0,640,200);
-    this.bigScrollCan.draw(this.can,0,100);
+    this.bigScrollCan.draw(this.can,64,164);
   }
   
   littleScroller(){
@@ -195,24 +196,24 @@ class Sinus {
       li.drawImage(this.scrollCan.canvas, 0,ys,40,1, 0,yd,640,4);
     li.globalCompositeOperation = "source-in";
     li.drawImage(this.backs.img, 0,200,1,80, 0,0,640,80);
-    this.bigScrollCan.draw(this.can, 0,322);
+    this.bigScrollCan.draw(this.can, 64,386);
   }
   
   roller(){
-    let ys=this.ctrRoll, yd=0;
+    let ys=this.ctrRoll, yd=64;
     [8,8,8,4,4,4,2,2].forEach(add=> {
-      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 72,yd,622,2);
       yd += 2;
       ys = (ys + add) % 400;
     })
-    for(;yd<94-16; yd+=2, ys=(ys+2)%400)
-      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+    for(;yd<94-16+64; yd+=2, ys=(ys+2)%400)
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 72,yd,622,2);
     [2,2,4,4,4,8,8,8].forEach(add=> {
-      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 8,yd,622,2);
+      this.ctx.drawImage(this.roll.img, 0,ys,622,2, 72,yd,622,2);
       yd += 2;
       ys = (ys + add) % 400;
     })
-    this.maskCan.draw(this.can,0,0);
+    this.maskCan.draw(this.can,64,64);
     this.ctrRoll++;
   }
   
