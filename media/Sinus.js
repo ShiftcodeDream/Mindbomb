@@ -11,14 +11,16 @@ class Sinus {
     this.bigScroller = this.bigScroller.bind(this);
     this.littleScroller = this.littleScroller.bind(this);
     this.roller = this.roller.bind(this);
+    this.intro = this.intro.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['SinBacks.png', 'Dalton_20x20.png', 'SinScroll.png', 'Sinus.ym'])).then(data => {
-      [this.backs, this.font, this.roll, this.preload] = data;
-    });
+    return Promise.all(this.demoManager.loadResource(
+      ['SinBacks.png', 'Dalton_20x20.png', 'SinScroll.png', 'lucky_16x16.png', 'Sinus.ym']))
+      .then(data => {
+      [this.backs, this.font, this.roll, this.tinyFont, this.preload] = data;});
   }
 
   // Initialize the demo (all resources are already loaded)
@@ -84,6 +86,12 @@ class Sinus {
     this.scrolltext.init(this.scrollCan, this.font, 1);
     this.bigScrollCan = new canvas(640,200);
     this.bigScrollCan.contex.imageSmoothingEnabled = false;
+    
+    this.tinyFont.initTile(16,16,32);
+    this.tinyCan = new canvas(640,16);
+    this.tinyScroll = new scrolltext_horizontal();
+    this.tinyScroll.scrtxt = "YEAH, I KNOW ITS BORING WAITING FOR A DEMO TO START WORKING BUT YOU'VE NO CHOICE SO TOUGH SHIT!!                         ";
+    this.tinyScroll.init(this.tinyCan, this.tinyFont, 6);
   }
 
   rotate(angles, figure) {
@@ -148,14 +156,26 @@ class Sinus {
       this.endCallback = endCallback;
       this.can = new canvas(768, 540, "main");
       this.ctx = this.can.contex;
-      document.body.addEventListener('keydown', this.onKeyPressed);
-      this.interval = setInterval(this.nextFrame, 12000);
       this.zik = new music('YM');
       this.zik.LoadAndRun(this.demoManager.basepath + 'Sinus.ym');
-      window.requestAnimFrame(this.main);
+      window.requestAnimFrame(this.intro);
     });
   }
 
+  intro(){
+    // scroffset
+    this.can.clear();
+    this.tinyScroll.draw(0);
+    this.tinyCan.draw(this.can, 64,256);
+    if(this.tinyScroll.scroffset < 116)
+      window.requestAnimFrame(this.intro);
+    else{
+      document.body.addEventListener('keydown', this.onKeyPressed);
+      this.interval = setInterval(this.nextFrame, 12000);
+      window.requestAnimFrame(this.main);
+    }
+  }
+  
   // Main loop, called by Codef requestAnimFrame
   main() {
     if (this.running) {
@@ -239,7 +259,7 @@ class Sinus {
       this.nextFrame();
     }
     if (event.key === 'l') {
-      console.log(this.frames[this.ctrFrame]);
+      console.log(this.tinyScroll.scroffset);
     }
     if (event.key === 'p') {
       this.paused = !this.paused;
