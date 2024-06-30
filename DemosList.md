@@ -13,7 +13,7 @@
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
 | 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | 
 | 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | Done
-| 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | 
+| 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | Mellowman & Shiftcode | Done
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | Shiftcode | WIP
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
 | 16 | Vector | THE VECTORS SCREEN | Shiftcode | Done
