@@ -11,8 +11,8 @@ class DiMatrix {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['hexa_digits_12x10_48.png', 'Cyber_32x32.png','MatrixBalls.png','DiBalls_Back.png'])).then(data => {
-      [this.tinyDigits, this.font, this.balls, this.back] = data;
+    return Promise.all(this.demoManager.loadResource(['DIA_Logos.png','hexa_digits_12x10_48.png', 'Cyber_32x32.png','MatrixBalls.png','DiBalls_Back.png'])).then(data => {
+      [this.logos, this.tinyDigits, this.font, this.balls, this.back] = data;
     });
   }
 
@@ -103,6 +103,9 @@ class DiMatrix {
   }
 
   digits(){
+    // TODO : Atari logo must dance !
+    this.logos.drawPart(this.can, 176,4, 0,0,288,62);
+    this.logos.drawPart(this.can, 94,110, 0,62, 482,136);
     this.back.draw(this.can, 0, 260);
     Object.keys(this.counters).forEach(key =>
       this.counters[key].draw(this.can, this.tinyDigits)
@@ -264,7 +267,7 @@ class DiMatrix {
       case 'F2':
       case 'F3':
       case 'F4':
-      case 'F5':
+      // case 'F5': // TODO : uncomment
       case 'F6':
       case 'F7':
       case 'F8':
