@@ -57,6 +57,7 @@ class DiMatrix {
       [14,0x28,0xFFD,0x4F,0,0,3,0xFD9,9,0,0,0,0], // F9
       [0,0,0,0,0,0,0,0,0,0,0,0,0], // F10
     ];
+    this.loadValues(1);
     this.running = true;
     // TODO : Reset compteur général de courbe
   }
@@ -65,6 +66,7 @@ class DiMatrix {
     const valeurs = this.presets[num];
     const c = this.counters;
     ['xspd_1', 'xdist1', 'xspd_2', 'xdist2', 'cdist', 'size_d', 'yspd_1', 'ydist1', 'yspd_2', 'ydist2', 'cspeed', 'size_s', 'csiz'].forEach((key, i) => c[key].v = valeurs[i]);
+    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = 0.0;
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -86,6 +88,7 @@ class DiMatrix {
       this.can.clear();
       this.digits();
       this.scrolltext.draw(400-32);
+      this.parametrics();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -112,12 +115,46 @@ class DiMatrix {
     );
   }
   
+  drawBall(x,y,s){
+    const pos=[0,120,110,96,78,56,30,0];
+    const siz=[0,6,10,14,18,22,26,30];
+    const t = siz[~~s];
+    this.balls.drawPart(this.can, ~~(x-t/2), ~~(y-t/2), 0, pos[~~s], t, t);
+  }
+  
+  parametrics(){
+    const f1 = 0.0043, f2 = Math.PI/640;
+    const c = this.counters;
+    
+    let deltax1 = 0.0, deltax2 = 0.0, deltay1 = 0.0, deltay2 = 0.0;
+    for(i=0; i<32; i++){
+      this.drawBall(
+        320 + 127*Math.sin(this.ctrx1+deltax1) + 127*Math.sin(this.ctrx2+deltax2),
+        200 - 69*Math.sin(this.ctry1+deltay1) - 69*Math.sin(this.ctry2+deltay2),
+        7
+      );
+      deltax1 = this.nextValue(deltax1, c['xdist1'].v, f2);
+      deltax2 = this.nextValue(deltax2, c['xdist2'].v, f2);
+      deltay1 = this.nextValue(deltay1, c['ydist1'].v, 2*f2);
+      deltay2 = this.nextValue(deltay2, c['ydist2'].v, 2*f2);
+    }
+    this.ctrx1 = this.nextValue(this.ctrx1, c['xspd_1'].v, f1);
+    this.ctrx2 = this.nextValue(this.ctrx2, c['xspd_2'].v, f1);
+    this.ctry1 = this.nextValue(this.ctry1, c['yspd_1'].v, 2*f1);
+    this.ctry2 = this.nextValue(this.ctry2, c['yspd_2'].v, 2*f1);
+  }
+  
+  nextValue(v, incr, factor){
+    if(incr & 0x800)
+      incr = ~(incr | 0xFFFFF000) + 1; // 2 complement for negative values
+    return v + factor * incr;
+  }
+  
   // Event processor
   onKeyPressed(event) {
     const e = () => event.preventDefault();
     const c = this.counters;
     
-    console.log(event.code);
     switch(event.code){
       case 'ArrowLeft':
         c['xspd_1'].decr();
@@ -274,6 +311,10 @@ class DiMatrix {
       case 'F9':
       case 'F10':
         this.loadValues(event.code.substring(1));
+        e();
+        return false;
+      case 'F11':
+        console.log(this);
         e();
         return false;
     }
