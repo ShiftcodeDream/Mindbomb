@@ -58,7 +58,7 @@ class DiMatrix {
       [0,0,0,0,0,0,0,0,0,0,0,0,0], // F10
     ];
     this.loadValues(1);
-    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = 0.0;   
+    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = this.ctrs = 0.0;   
     this.running = true;
     
     // TODO : delete
@@ -69,6 +69,9 @@ class DiMatrix {
     const valeurs = this.presets[num];
     const c = this.counters;
     ['xspd_1', 'xdist1', 'xspd_2', 'xdist2', 'cdist', 'size_d', 'yspd_1', 'ydist1', 'yspd_2', 'ydist2', 'cspeed', 'size_s', 'csiz'].forEach((key, i) => c[key].v = valeurs[i]);
+    this.ctrs = 0.0;
+    if(num === '10')
+      this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = 0.0;
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -122,16 +125,19 @@ class DiMatrix {
   drawBall(x,y,s){
     const pos=[0,120,110,96,78,56,30,0];
     const siz=[0,6,10,14,18,22,26,30];
+    s = Math.round(s);
     const t = siz[~~s];
-    this.balls.drawPart(this.can, ~~(x-t/2), ~~(y-t/2), 0, pos[~~s], t, t);
+    this.balls.drawPart(this.can, ~~(x-t/2), ~~(y-t/2), 0, pos[s], t, t);
   }
   
   parametrics(){
-    const f1=Math.PI/753, f2=Math.PI/640, f3=Math.PI/120, f4=Math.PI/126;
+    const f1=Math.PI/753, f2=Math.PI/640, f3=Math.PI/120, f4=Math.PI/126, f5=Math.PI/192, f6=Math.PI/180;
     const c = this.counters;
     const r = c['csiz'].v;
     
-    let deltax1 = this.ctrx1, deltax2 = this.ctrx2, deltay1 = this.ctry1, deltay2 = this.ctry2, deltac = this.ctrc;
+    let deltax1 = this.ctrx1, deltax2 = this.ctrx2,
+        deltay1 = this.ctry1, deltay2 = this.ctry2,
+        deltac = this.ctrc, deltas = this.ctrs;
     for(i=0; i<32; i++){
       this.drawBall(
         320  /* x center */
@@ -142,19 +148,21 @@ class DiMatrix {
           + r*4*Math.cos(deltac) /* y center shift */
           - 69*Math.sin(deltay1)   /* first Lissajoux param for y */
           - 69*Math.sin(deltay2),  /* second Lissajoux param for y */
-        7 /* ball size */
+        4 + 3*Math.cos(deltas) /* ball size */
       );
       deltax1 = this.nextValue(deltax1, c['xdist1'].v, f2);
       deltax2 = this.nextValue(deltax2, c['xdist2'].v, f2);
       deltay1 = this.nextValue(deltay1, c['ydist1'].v, 2*f2);
       deltay2 = this.nextValue(deltay2, c['ydist2'].v, 2*f2);
       deltac  = this.nextValue(deltac , c['cdist'].v, f3);
+      deltas  = this.nextValue(deltas , c['size_d'].v, f5);
     }
     this.ctrx1 = this.nextValue(this.ctrx1, c['xspd_1'].v, f1);
     this.ctrx2 = this.nextValue(this.ctrx2, c['xspd_2'].v, f1);
     this.ctry1 = this.nextValue(this.ctry1, c['yspd_1'].v, 2*f1);
     this.ctry2 = this.nextValue(this.ctry2, c['yspd_2'].v, 2*f1);
     this.ctrc  = this.nextValue(this.ctrc , c['cspeed'].v, f4);
+    this.ctrs  = this.nextValue(this.ctrs , c['size_s'].v, f6);
   }
   
   nextValue(v, incr, factor){
