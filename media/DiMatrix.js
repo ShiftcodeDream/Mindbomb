@@ -52,21 +52,23 @@ class DiMatrix {
       [0x13,0x27,8,0x27,0xFFF,0,3,0x27,0xFFE,0x27,6,0,0], // F4
       [0xFF3,0,4,0xFFB,0x4D,4,10,3,0xFFA,0xFF7,3,0,3], // F5
       [16,0x1C,15,0xFF6,0x19,0,10,0xFFB,3,20,3,0,4], // F6
-      [0xFFC,0xFFE,9,0xFEF,0,32,7,88,8,3,0,10,0], // F7
+      [0xFFC,0xFFE,9,0xFEF,0,32,7,8,8,3,0,10,0], // F7
       [0xFF7,0x1A4,0xFF5,0x1A4,0x26,0,0xFF8,0x1A6,5,0x1A6,4,0,5], // F8
       [14,0x28,0xFFD,0x4F,0,0,3,0xFD9,9,0,0,0,0], // F9
       [0,0,0,0,0,0,0,0,0,0,0,0,0], // F10
     ];
     this.loadValues(1);
+    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = 0.0;   
     this.running = true;
-    // TODO : Reset compteur général de courbe
+    
+    // TODO : delete
+    addstats();
   }
 
   loadValues(num){
     const valeurs = this.presets[num];
     const c = this.counters;
     ['xspd_1', 'xdist1', 'xspd_2', 'xdist2', 'cdist', 'size_d', 'yspd_1', 'ydist1', 'yspd_2', 'ydist2', 'cspeed', 'size_s', 'csiz'].forEach((key, i) => c[key].v = valeurs[i]);
-    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = 0.0;
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -76,7 +78,7 @@ class DiMatrix {
       this.endCallback = endCallback;
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
-      this.scrolltext.init(this.can, this.font, 8);
+      this.scrolltext.init(this.can, this.font, 12);
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
@@ -89,6 +91,8 @@ class DiMatrix {
       this.digits();
       this.scrolltext.draw(400-32);
       this.parametrics();
+      // TODO : delete
+      updatestats();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -123,25 +127,34 @@ class DiMatrix {
   }
   
   parametrics(){
-    const f1 = 0.0043, f2 = Math.PI/640;
+    const f1=Math.PI/753, f2=Math.PI/640, f3=Math.PI/120, f4=Math.PI/126;
     const c = this.counters;
+    const r = c['csiz'].v;
     
-    let deltax1 = 0.0, deltax2 = 0.0, deltay1 = 0.0, deltay2 = 0.0;
+    let deltax1 = this.ctrx1, deltax2 = this.ctrx2, deltay1 = this.ctry1, deltay2 = this.ctry2, deltac = this.ctrc;
     for(i=0; i<32; i++){
       this.drawBall(
-        320 + 127*Math.sin(this.ctrx1+deltax1) + 127*Math.sin(this.ctrx2+deltax2),
-        200 - 69*Math.sin(this.ctry1+deltay1) - 69*Math.sin(this.ctry2+deltay2),
-        7
+        320  /* x center */
+          + r*4*Math.sin(deltac) /* x center shift */
+          + 127*Math.sin(deltax1)  /* first Lissajoux param for x */
+          + 127*Math.sin(deltax2), /* second Lissajoux param for x */
+        200 /* y center */
+          + r*4*Math.cos(deltac) /* y center shift */
+          - 69*Math.sin(deltay1)   /* first Lissajoux param for y */
+          - 69*Math.sin(deltay2),  /* second Lissajoux param for y */
+        7 /* ball size */
       );
       deltax1 = this.nextValue(deltax1, c['xdist1'].v, f2);
       deltax2 = this.nextValue(deltax2, c['xdist2'].v, f2);
       deltay1 = this.nextValue(deltay1, c['ydist1'].v, 2*f2);
       deltay2 = this.nextValue(deltay2, c['ydist2'].v, 2*f2);
+      deltac  = this.nextValue(deltac , c['cdist'].v, f3);
     }
     this.ctrx1 = this.nextValue(this.ctrx1, c['xspd_1'].v, f1);
     this.ctrx2 = this.nextValue(this.ctrx2, c['xspd_2'].v, f1);
     this.ctry1 = this.nextValue(this.ctry1, c['yspd_1'].v, 2*f1);
     this.ctry2 = this.nextValue(this.ctry2, c['yspd_2'].v, 2*f1);
+    this.ctrc  = this.nextValue(this.ctrc , c['cspeed'].v, f4);
   }
   
   nextValue(v, incr, factor){
