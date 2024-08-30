@@ -58,11 +58,9 @@ class DiMatrix {
       [0,0,0,0,0,0,0,0,0,0,0,0,0], // F10
     ];
     this.loadValues(1);
-    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = this.ctrs = 0.0;   
+    this.ctrx1 = this.ctrx2 = this.ctry1 = this.ctry2 = this.ctrc = this.ctrs = 0.0;
+    this.ctrLogo = this.logoSpeed = this.logoDevSpeed = 0.0;
     this.running = true;
-    
-    // TODO : delete
-    addstats();
   }
 
   loadValues(num){
@@ -93,9 +91,8 @@ class DiMatrix {
       this.can.clear();
       this.digits();
       this.scrolltext.draw(400-32);
+      this.logoDance();
       this.parametrics();
-      // TODO : delete
-      updatestats();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -113,13 +110,22 @@ class DiMatrix {
   }
 
   digits(){
-    // TODO : Atari logo must dance !
-    this.logos.drawPart(this.can, 176,4, 0,0,288,62);
     this.logos.drawPart(this.can, 94,110, 0,62, 482,136);
     this.back.draw(this.can, 0, 260);
     Object.keys(this.counters).forEach(key =>
       this.counters[key].draw(this.can, this.tinyDigits)
     );
+  }
+  
+  logoDance(){
+    const f1=0.0015, f2=0.0015;
+    let delta = this.ctrLogo;
+    for(let y=0; y<62; y+=2){
+      let x = 176 + 176*Math.sin(delta);
+      this.logos.drawPart(this.can, ~~x,y+4, 0,y,288,2);
+      delta += f2*this.logoDevSpeed;
+    }
+    this.ctrLogo += f1*this.logoSpeed;
   }
   
   drawBall(x,y,s){
@@ -321,6 +327,22 @@ class DiMatrix {
         c['xdist2'].incr();
         e();
         return false;
+      case 'KeyQ':
+        this.logoDevSpeed = this.decr(this.logoDevSpeed, 40);
+        e();
+        return false;
+      case 'KeyW':
+        this.logoDevSpeed = this.incr(this.logoDevSpeed, 40);
+        e();
+        return false;
+      case 'KeyA':
+        this.logoSpeed = this.decr(this.logoSpeed, 36);
+        e();
+        return false;
+      case 'KeyS':
+        this.logoSpeed = this.incr(this.logoSpeed, 36);
+        e();
+        return false;
       case 'F1':
       case 'F2':
       case 'F3':
@@ -343,6 +365,16 @@ class DiMatrix {
       e();
       this.stop();
     }
+  }
+  
+  incr(oldValue, maxi){
+    let r = oldValue + 1;
+    return r <= maxi ? r : maxi;
+  }
+  
+  decr(oldValue, maxi){
+    let r = oldValue - 1;
+    return r >= -maxi ? r : -maxi;
   }
 }
 
