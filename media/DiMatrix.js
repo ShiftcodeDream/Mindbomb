@@ -11,8 +11,8 @@ class DiMatrix {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['DIA_Logos.png','hexa_digits_12x10_48.png', 'Cyber_32x32.png','MatrixBalls.png','DiBalls_Back.png'])).then(data => {
-      [this.logos, this.tinyDigits, this.font, this.balls, this.back] = data;
+    return Promise.all(this.demoManager.loadResource(['DIA_Logos.png','hexa_digits_12x10_48.png', 'Cyber_32x32.png','MatrixBalls.png','DiBalls_Back.png', 'Scoop-Thats_The_Way_It_is.sndh'])).then(data => {
+      [this.logos, this.tinyDigits, this.font, this.balls, this.back, this.zik] = data;
     });
   }
 
@@ -81,6 +81,8 @@ class DiMatrix {
       this.ctx = this.can.contex;
       this.scrolltext.init(this.can, this.font, 12);
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.changeTrack(1);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -347,7 +349,7 @@ class DiMatrix {
       case 'F2':
       case 'F3':
       case 'F4':
-      // case 'F5': // TODO : uncomment
+      case 'F5':
       case 'F6':
       case 'F7':
       case 'F8':
@@ -356,13 +358,17 @@ class DiMatrix {
         this.loadValues(event.code.substring(1));
         e();
         return false;
-      case 'F11':
-        console.log(this);
+      case 'KeyM':
+        this.counters.music.v = Math.abs(this.counters.music.v-1);
+        this.zik.stop();
+        this.zik.changeTrack(this.counters.music.v);
+        this.zik.play();
         e();
         return false;
     }
     if (event.key === ' ') {
       e();
+      this.zik.stop();
       this.stop();
     }
   }
