@@ -6,6 +6,7 @@ class MegaBalls {
     this.main = this.main.bind(this);
     this.stop = this.stop.bind(this);
     this.end = this.end.bind(this);
+    this.do3d = this.do3d.bind(this);
   }
 
   // Loads resources and returns a Promise
@@ -55,8 +56,38 @@ class MegaBalls {
         cible.data[i+3] = source.data[i+3];
       }
       tmpctx.putImageData(cible,0,0);
-      return new image(tmpcan.canvas.toDataURL('image/png'));
+      const result = new image(tmpcan.canvas.toDataURL('image/png'));
+      result.sethandle(32, 31);
+      result.midhandled = true;
+      return result;
     });
+    
+    this.rotation = {x:0,y:0,z:0};
+    this.rotSpeed = {x:0,y:0,z:0};
+    this.rotSpeed = {x:Math.PI/200,y:Math.PI/210,z:Math.PI/180};
+    // Cube
+    this.figure = [
+      {x:-100, y:-100, z:-100, c:5},
+      {x:100, y:-100, z:-100, c:5},
+      {x:100, y:100, z:-100, c:5},
+      {x:-100, y:100, z:-100, c:5},
+      
+      {x:-100, y:-100, z:0, c:6},
+      {x:100, y:-100, z:0, c:6},
+      {x:100, y:100, z:0, c:6},
+      {x:-100, y:100, z:0, c:6},
+      
+      {x:-100, y:-100, z:100, c:7},
+      {x:100, y:-100, z:100, c:7},
+      {x:100, y:100, z:100, c:7},
+      {x:-100, y:100, z:100, c:7}
+    ];
+    // 3D world parameters
+    this.cameraZoom = 1.0; // 1 = max zoom
+    this.perspectiveZoom = 0.88; // cameraZoom ponderation
+    this.zPerspective = 0.002;  // factor for Z coordinate
+    this.ballsPerspective = 1/200/this.perspectiveZoom; // ball size according to Z coord. and zoom
+    this.ballColor = 6; // Current balls colors (see this.balls = ... for colors details)
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -80,8 +111,9 @@ class MegaBalls {
       this.starfield.draw();
       this.ctx.drawImage(this.back.img, 0,0,1,180, 0,220,640,180);
       this.scrolltext.draw(0);
+      this.do3d();
       
-      this.balls.forEach((b,i) => b.draw(this.can, i*64,280));
+      this.balls.forEach((b,i) => b.draw(this.can, i*64+32,366));
       
       window.requestAnimFrame(this.main);
     } else {
@@ -89,6 +121,52 @@ class MegaBalls {
     }
   }
 
+  do3d(){
+    const sin = Math.sin, cos = Math.cos;
+    const r = this.rotation;
+    // Computes the rotation
+    let rotated = this.figure.map(p => {
+      let x0,x1,x2,y0,y1,y2,z0,z1,z2;
+      // x axis
+      x0 = p.x;
+      y0 = p.y*cos(r.x) + p.z*sin(r.x);
+      z0 = p.z*cos(r.x) - p.y*sin(r.x);
+      // y axis
+      x1 = x0*cos(r.y) - z0*sin(r.y);
+      y1 = y0;
+      z1 = z0*cos(r.y) + x0*sin(r.y);
+      // z axis
+      x2 = x1*cos(r.z) + y1*sin(r.z);
+      y2 = y1*cos(r.z) - x1*sin(r.z);
+      z2 = z1;
+      return {x:x2, y:y2, z:z2, c:p.c};
+    });
+    this.rotation = {
+      x: r.x + this.rotSpeed.x,
+      y: r.y + this.rotSpeed.y,
+      z: r.z + this.rotSpeed.z
+    }
+    
+    // Displays the figure
+    rotated.sort((a,b) => a.z - b.z);
+    
+    
+    const zoom = this.cameraZoom * this.perspectiveZoom;
+    rotated.forEach(p => {
+      const size = (p.z+100) * zoom * this.ballsPerspective;
+        
+      this.balls[p.c].draw(
+        this.can,
+        320 + ~~(p.x*zoom + p.x * p.z*this.zPerspective),
+        200 + ~~(p.y*zoom + p.y * p.z*this.zPerspective),
+        1.0, 0, size, size
+      );
+    })
+    
+    // Shadow
+    
+  }
+  
   stop() {
     this.running = false;
   }
