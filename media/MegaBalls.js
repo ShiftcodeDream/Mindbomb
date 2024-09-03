@@ -84,10 +84,10 @@ class MegaBalls {
     ];
     // 3D world parameters
     this.cameraZoom = 1.0; // 1 = max zoom
-    this.perspectiveZoom = 0.88; // cameraZoom ponderation
-    this.zPerspective = 0.002;  // factor for Z coordinate
-    this.ballsPerspective = 1/200/this.perspectiveZoom; // ball size according to Z coord. and zoom
-    this.ballColor = 6; // Current balls colors (see this.balls = ... for colors details)
+    this.perspectiveZoom = 0.64; // cameraZoom ponderation
+    this.zPerspective = 0.001;  // factor for Z coordinate
+    this.ballsPerspective = 1/800/this.perspectiveZoom; // ball size according to Z coord. and zoom
+    this.ballColor = 6; // Current balls colors (see this.balls = ... above for colors details)
   }
   
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -153,7 +153,7 @@ class MegaBalls {
     
     const zoom = this.cameraZoom * this.perspectiveZoom;
     rotated.forEach(p => {
-      const size = (p.z+100) * zoom * this.ballsPerspective;
+      const size = zoom + (p.z+100) * zoom * this.ballsPerspective;
         
       this.balls[p.c].draw(
         this.can,
@@ -179,6 +179,16 @@ class MegaBalls {
 
   // Event processor
   onKeyPressed(event) {
+    switch(event.key){
+      case '+':
+        this.cameraZoom += 0.01;
+        console.log({zoom:this.cameraZoom});
+        break;
+      case '-':
+        this.cameraZoom -= 0.01;
+        console.log({zoom:this.cameraZoom});
+        break;
+    }
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
