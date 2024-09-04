@@ -2,11 +2,10 @@ class MegaBalls {
   constructor(demoManager) {
     this.demoManager = demoManager;
     // Bind to this all internally called functions
-    this.onKeyPressed = this.onKeyPressed.bind(this);
-    this.main = this.main.bind(this);
-    this.stop = this.stop.bind(this);
-    this.end = this.end.bind(this);
-    this.do3d = this.do3d.bind(this);
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach(key => {
+      if('function' === typeof this[key])
+        this[key] = this[key].bind(this);
+    })
   }
 
   // Loads resources and returns a Promise
@@ -63,33 +62,231 @@ class MegaBalls {
     });
     
     this.rotation = {x:0,y:0,z:0};
+    this.translation = {x:0,y:0,z:0};
     this.rotSpeed = {x:0,y:0,z:0};
-    this.rotSpeed = {x:Math.PI/200,y:Math.PI/210,z:Math.PI/180};
-    // Cube
-    this.figure = [
-      {x:-100, y:-100, z:-100, c:5},
-      {x:100, y:-100, z:-100, c:5},
-      {x:100, y:100, z:-100, c:5},
-      {x:-100, y:100, z:-100, c:5},
-      
-      {x:-100, y:-100, z:0, c:6},
-      {x:100, y:-100, z:0, c:6},
-      {x:100, y:100, z:0, c:6},
-      {x:-100, y:100, z:0, c:6},
-      
-      {x:-100, y:-100, z:100, c:7},
-      {x:100, y:-100, z:100, c:7},
-      {x:100, y:100, z:100, c:7},
-      {x:-100, y:100, z:100, c:7}
+
+    const cube = [{ x: -80, y: -80, z: -80 }, { x: 80, y: -80, z: -80 }, { x: 80, y: 80, z: -80 }, { x: -80, y: 80, z: -80 },
+      { x: -80, y: -80, z: 80 }, { x: 80, y: -80, z: 80 }, { x: 80, y: 80, z: 80 }, { x: -80, y: 80, z: 80 } ];
+
+    // 3D Objects
+    this.figures = [
+      {color:0, points:[]},
+      // Yellow cube
+      { color: 0, points: cube
+      },
+      // red cross
+      { color: 1, points: [
+          { x: -35, y: 0, z: -35 }, { x: -35, y: 0, z: 35 }, { x: 35, y: 0, z: -35 }, { x: 35, y: 0, z: 35 },
+          { x: -70, y: 0, z: -70 }, { x: -70, y: 0, z: 70 }, { x: 70, y: 0, z: -70 }, { x: 70, y: 0, z: 70 } ]
+      },
+      // Green circle
+      { color: 2, points: this.circle(80, 'z') },
+      // Big gray circle
+      { color: 3, points: this.circle(200, 'y') },
+      // Big shifted magenta circle
+      { color: 4, points: this.circle(200, 'y') },
+      // Big cyan third of circle
+      { color: 5, points: this.circle(200, 'y', 2*Math.PI/3) },
+      // Red cube
+      { color: 1, points: cube
+      },
+      // Green variable size circle
+      { color: 6, points: this.circle(200, 'y')},
+      // Kind of ship
+      { color: 7, points: [{ x:-90, y:0, z:0}, {x:-50, y:0, z:-50}, {x:-50, y:0, z:50}, {x:-70, y:-50, z:0},
+          { x:90, y:0, z:0}, {x:50, y:0, z:-50}, {x:50, y:0, z:50}, {x:70, y:-50, z:0 } ]
+      },
+      {color: 8, points: cube}
     ];
+
     // 3D world parameters
     this.cameraZoom = 1.0; // 1 = max zoom
-    this.perspectiveZoom = 0.64; // cameraZoom ponderation
+    this.perspectiveZoom = 0.93; // cameraZoom ponderation
     this.zPerspective = 0.001;  // factor for Z coordinate
     this.ballsPerspective = 1/800/this.perspectiveZoom; // ball size according to Z coord. and zoom
     this.ballColor = 6; // Current balls colors (see this.balls = ... above for colors details)
+
+    // Animation sequences
+    this.scenic = [
+      {change:0, t:3},
+      {change:1, effect:[this.appear, this.oscille, this.rotate1], t:2},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.rotate2, this.oscille], t:5},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.disappear, this.oscille], t:2.5},
+      {change:0, t:2.5},
+      {change:2, effect:[this.appear, this.oscille, this.rotate1], t:2},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.rotate2, this.oscille], t:5},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.disappear, this.oscille], t:2.5},
+      {change:0, t:2.5},
+      {change:3, effect:[this.appear, this.oscille, this.rotate1], t:2},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.rotate3, this.oscille], t:5},
+      {effect:[this.rotate1, this.oscille], t:2.5},
+      {effect:[this.rotate0, this.disappear], t:2.5},
+      {change:0, t:2.5},
+      {change:4, effect:[this.appear, this.rotate1, this.syncRebound], t:2},
+      {effect:[this.rotate1, this.syncRebound], t:10},
+      {effect:[this.disappear, this.rotate1, this.syncRebound], t:2.5},
+      {change:0, t:2.5},
+      {change:5, effect:[this.appear, this.rotate1, this.shiftedRebound], t:2},
+      {effect:[this.rotate1, this.shiftedRebound], t:10},
+      {effect:[this.disappear, this.rotate1, this.shiftedRebound], t:2.5},
+      {change:0, t:2.5},
+      {change:6, effect:[this.appear, this.rotate1, this.shiftedRebound], t:2},
+      {effect:[this.rotate1, this.shiftedRebound], t:10},
+      {effect:[this.disappear, this.rotate1, this.shiftedRebound], t:2.5},
+      {change:0, t:2.5},
+      {change:7, effect:[this.appear, this.oscille2, this.rotate1, this.rebound2], t:2},
+      {effect:[this.rotate1, this.oscille2, this.rebound2], t:10},
+      {effect:[this.disappear, this.oscille2, this.rebound2], t:2.5},
+      {change:8, effect:[this.varsize, this.syncRebound, this.rotate1, this.appear], t:2},
+      {effect:[this.varsize, this.rotate1, this.syncRebound], t:10},
+      {effect:[this.varsize, this.rotate1, this.syncRebound, this.disappear], t:2.5},
+      {change:9, effect:[this.appear, this.rotate1, this.round], t:2},
+      {effect:[this.rotate1, this.round], t:2.5},
+      {effect:[this.rotate4, this.round], t:5},
+      {effect:[this.rotate1, this.round], t:2.5},
+      {effect:[this.disappear, this.rotate1, this.round], t:2.5},
+      {change:0, t:2.5},
+      {change:10, effect:[this.appear, this.rotate1, this.oscille, this.varcube], t:2},
+      {effect:[this.rotate1, this.oscille, this.varcube], t:2.5},
+      {effect:[this.rotate2, this.oscille, this.varcube], t:5},
+      {effect:[this.rotate1, this.oscille, this.varcube], t:2.5},
+      {effect:[this.rotate1, this.oscille, this.varcube, this.disappear], t:2.5},
+      {change:0, t:2.5},      
+    ];
+    this.ctrScenic = -1;
+    this.ctrFrames = 0;
+    this.ctrAnim = 0;
+  }
+
+  // Effects used
+  // Camera zoom in
+  appear(){
+    this.cameraZoom += 1/150;
+  }
+  // Camera zoom out
+  disappear(){
+    this.cameraZoom -= 1/180;
+  }
+  // Cancels rotations
+  rotate0(){
+    this.rotSpeed = {x:0,y:0,z:0};
+  }
+  // All kinds of rotations
+  rotate1(){
+    this.rotSpeed = {x:0, y:-Math.PI/72, z:0};
+  }
+  rotate2(){
+    this.rotSpeed = {x:-Math.PI/75, y:-Math.PI/75, z:0};
+  }
+  rotate3(){
+    this.rotSpeed = {x:0, y:-Math.PI/72, z:Math.PI/60};
+  }
+  rotate4(){
+    this.rotSpeed = {x:-Math.PI/75, y:-Math.PI/75, z:-Math.PI/75};
+  }
+  // x coords oscillation (2 different speeds)
+  oscille(){
+    this.translation.x = 120*Math.sin(this.ctrAnim * Math.PI/72);
+  }
+  oscille2(){
+    this.translation.x = 120*Math.sin(this.ctrAnim * Math.PI/60);
+  }
+  // Bouncing all balls together
+  syncRebound(){
+    let y = 120 - 200*Math.abs(Math.sin(this.ctrAnim * Math.PI/60));
+    this.figure = this.figure.map(f => {f.y = y; return f});
+  }
+  // Boucing balls with shifts between each one
+  shiftedRebound(){
+    let a = this.ctrAnim * Math.PI/60;
+    this.figure = this.figure.map(f => {
+      f.y = 120 - 180*Math.abs(Math.sin(a));
+      a -= Math.PI/8;
+      return f
+    });
+  }
+  // Low amplitude bouncing balls
+  rebound2(){
+    this.translation.y = -40*Math.abs(Math.sin(this.ctrAnim * Math.PI/120));
+  }
+  // Circle shape with cycling expansion / collapse
+  varsize(){
+    this.figure = this.circle( 115 + 85*Math.cos(this.ctrAnim * Math.PI/60), 'y');
+  }
+  // Cube with oscillating dimensions
+  varcube(){
+    const sign = Math.sign;
+    var s = 55 + 25*Math.cos(this.ctrAnim * Math.PI/60);
+    this.figure = this.figure.map(f => ({
+      x: s * sign(f.x),
+      y: s * sign(f.y),
+      z: s * sign(f.z),
+    }));
+  }
+  // Circle-shaped path
+  round(){
+    let a = this.ctrAnim * Math.PI/72;
+    this.translation = {
+      x: 160*Math.sin(a),
+      y: 0,
+      z: 160*Math.cos(a)
+    }
+  }
+  // Crafts a shape using 8 balls in circle
+  // r : radius, axis : axis of the circle (x y or z)
+  // range : part of the circle (in radians) that contains the balls
+  circle(r, axis, range = 2*Math.PI){
+    const result = [], pi = Math.PI;
+    for(let i=pi/8; i<range; i+=range/8){
+      let a = r*Math.sin(i), b = r*Math.cos(i);
+      switch(axis){
+        case 'x':
+          result.push({x:0,y:a,z:b});
+          break;
+        case 'y':
+          result.push({x:a,y:0,z:b});
+          break;
+        case 'z':
+          result.push({x:a,y:b,z:0});
+          break;
+      }
+    }
+    return result;
   }
   
+  // Manages animation sequences
+  anime(){
+    if(this.ctrFrames-- <= 0){
+      this.ctrScenic++;
+      if(this.ctrScenic >= this.scenic.length)
+        this.ctrScenic = 0;
+      this.action = this.scenic[this.ctrScenic];
+      if(undefined !== this.action.change)
+        this.changeFigure(this.action.change);
+      this.ctrFrames = this.action.t * 60; // 60 fps
+    }
+    this.translation = {x:0,y:0,z:0};
+    if (this.action.effect)
+      this.action.effect.forEach(a => a());
+    this.ctrAnim++;
+  }
+
+  // Changes the figure to display
+  changeFigure(num){
+    const f = this.figures[num];
+    this.figure = f.points;
+    this.ballColor = f.color;
+    this.rotation = {x:0,y:0,z:0};
+    this.rotSpeed = {x:0,y:0,z:0};
+    this.cameraZoom = 0;
+    this.ctrAnim = 0;
+  }
+
   // Starts the demo and returns a Promise that will be resolved at the end
   // of the demo.
   start() {
@@ -111,20 +308,19 @@ class MegaBalls {
       this.starfield.draw();
       this.ctx.drawImage(this.back.img, 0,0,1,180, 0,220,640,180);
       this.scrolltext.draw(0);
-      this.do3d();
-      
-      this.balls.forEach((b,i) => b.draw(this.can, i*64+32,366));
-      
+      this.anime();
+      this.render();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
     }
   }
 
-  do3d(){
+  // Rotation, translation and rendering
+  render(){
     const sin = Math.sin, cos = Math.cos;
-    const r = this.rotation;
-    // Computes the rotation
+    const r = this.rotation, t = this.translation;
+    // Computes rotation and translation
     let rotated = this.figure.map(p => {
       let x0,x1,x2,y0,y1,y2,z0,z1,z2;
       // x axis
@@ -139,7 +335,11 @@ class MegaBalls {
       x2 = x1*cos(r.z) + y1*sin(r.z);
       y2 = y1*cos(r.z) - x1*sin(r.z);
       z2 = z1;
-      return {x:x2, y:y2, z:z2, c:p.c};
+      return {
+        x:x2 + t.x,
+        y:y2 + t.y,
+        z:z2 + t.z
+      };
     });
     this.rotation = {
       x: r.x + this.rotSpeed.x,
@@ -149,22 +349,21 @@ class MegaBalls {
     
     // Displays the figure
     rotated.sort((a,b) => a.z - b.z);
-    
-    
     const zoom = this.cameraZoom * this.perspectiveZoom;
+    
+    // Shadows
+    
+    // And balls
     rotated.forEach(p => {
       const size = zoom + (p.z+100) * zoom * this.ballsPerspective;
         
-      this.balls[p.c].draw(
+      this.balls[this.ballColor].draw(
         this.can,
         320 + ~~(p.x*zoom + p.x * p.z*this.zPerspective),
         200 + ~~(p.y*zoom + p.y * p.z*this.zPerspective),
         1.0, 0, size, size
       );
-    })
-    
-    // Shadow
-    
+    });
   }
   
   stop() {
