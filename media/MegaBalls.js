@@ -352,6 +352,18 @@ class MegaBalls {
     const zoom = this.cameraZoom * this.perspectiveZoom;
     
     // Shadows
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    rotated.forEach(p => {
+      const size = Math.abs(zoom + (p.z+100) * zoom * this.ballsPerspective);
+      this.ctx.beginPath();
+      this.ctx.ellipse(
+        320 + ~~(p.x*zoom + p.x * p.z*this.zPerspective),
+        250 + ~~((300-p.y)*zoom/3 + p.y * p.z*this.zPerspective),
+        32*size, 16*size,
+        0, 0, 2*Math.PI
+      );
+      this.ctx.fill();
+    });
     
     // And balls
     rotated.forEach(p => {
