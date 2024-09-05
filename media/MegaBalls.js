@@ -11,8 +11,8 @@ class MegaBalls {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['Hellfire_64x64_46.png', 'MegaBalls.png', 'MegaBallsBack.png'])).then(data => {
-      [this.font, this.ballImg, this.back] = data;
+    return Promise.all(this.demoManager.loadResource(['Hellfire_64x64_46.png', 'MegaBalls.png', 'MegaBallsBack.png', 'Hybris.sndh'])).then(data => {
+      [this.font, this.ballImg, this.back, this.zik] = data;
     });
   }
 
@@ -309,6 +309,7 @@ class MegaBalls {
       this.starfield = new starfield3D(this.can, 200, 3, 640, 156, 320, 0, '#fff', 100, 0,64);
       this.starfield.draw = Object.getPrototypeOf(this).overrideDrawStarfield.bind(this.starfield);
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -421,6 +422,7 @@ class MegaBalls {
   }
   
   stop() {
+    this.zik.stop();
     this.running = false;
   }
 
