@@ -6,8 +6,8 @@
 | 3 | DiMindBomb.js | THE DIGITAL INSANITY GUEST SCREEN NUMBER 1 | Shiftcode | Done
 | 4 | MovingBack.js | THE MOVING BACKGROUND SCREEN | Mellowman | Done
 | 5 | ParaScroll.js | THE 2 LAYER MOVING BACKGROUND SCREEN | 
-| 6 | MegaBalls.js | THE 3D MEGABALLS SCREEN OR WHAT HAPPENS TO YOUR BALLS WHEN YOU MATURE!! | Shiftcode | WIP
-| 7 | PoDo.js | THE P.D LIBRARY INFO SCREEN | 
+| 6 | MegaBalls.js | THE 3D MEGABALLS SCREEN OR WHAT HAPPENS TO YOUR BALLS WHEN YOU MATURE!! | Shiftcode | Done
+| 7 | PoDo.js | THE P.D LIBRARY INFO SCREEN | Mellowman | WIP
 | 8 | DiMatrix.js | THE 2ND DIGITAL INSANITY GUEST SCREEN THE MATRIX SCREEN | Shiftcode | Done
 | 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
