@@ -23,7 +23,8 @@ class MegaBalls {
     this.scrolltext = new scrolltext_horizontal();
     this.scrolltext.scrtxt = "OH GOD ANOTHER SCREEN AND ANOTHER FLAMING SCROLLINE.  SO WHAT DO YOU THINK OF MY THREE DIMENSIONAL SPRITES THEN?? I ACTUALLY FIRST WROTE SOME THREE D SPRITE ROUTINES IN APRIL LAST YEAR. THAT WAS  JUST AFTER DEF DEMO WAS RELEASED. I THOUGHT UP THE ALGORITHM ON THE BUS HOME FROM COLLEGE AFTER HAVING A LESSON ON DOUBLE ANGLE IDENTITIES.  THAT IS THE FIRST TIME I EVER LEARNED ANYTHING INTERESTING IN MATHS... ANYWAY NOW SIX MONTHS AND MANY REWRITES LATER THEY HAVE METAMORPHOSED INTO THESE ROUTINES. THE NICE SMOOTH COLOR CHANGE IDEA COMES FROM A GAME CALLED DUGGER. IT SEEMS TO WORK REALLY WELL ON MY MONITOR...  THIS SCREEN CHEATS  IN SOME WAYS IN ORDER TO OBTAIN ITS SPEED. THE WAVES ARE ALL WORKED BEFORE THEY ARE PLOTTED. THE GAP BETWEEN THE END OF ONE WAVE AND THE NEXT IS THE TIME TAKEN TO RECALCULATE THE POINTS. THE ROUTINE IS QUITE COMPLICATED NOW AND ALLOWS A LARGE AMOUNT OF CONTROL OVER THE SPRITES. THE EIGHT SPRITES CAN BE ARRANGED IN ANY FORM. THEY CAN THEN BE BOUNCED OR SPUN OR WOBBLED AND FADED IN AND OUT .   THE POSITIONS OF THE SHADOWS ARE WORKED OUT PREVIOUSLY AS WELL BUT THE SHADOWS THEMSELVES  ARE ACTUALLY NOTTED SPRITE MASKS.. IF YOU PROGRAM YOU WILL KNOW WHAT I MEAN.  ALL THE CODING AND THE GRAPHIX FOR THE SPRITE IN THIS SCREEN WAS DONE BY MANIKIN  IN ABOUT ONE WEEK DURING OCTOBER. AND THEN IN TYPICAL LOST BOYS FASHION IN MARCH NINETEEN NINETY I DECIDED AT ALMOST THE LAST MINUTE TO RE WRITE THE SCREEN WITH A FASTER SPRITE ROUTINE AND STARS.  ENCOURAGEMENT AND MORAL SUPPORT FROM IAN.. IE..  THATS FUCKING GOOD THAT IS TIM ...  THE FONT WAS DRAWN BY SPAZ AND THE SUPERB MUSIC IS BY CHRISPY NOODLE OF OUR GOOD FRIENDS BBC....  ADDITIONAL INFORMATION WAS OBTAINED FROM  THREE D GRAPHICS PROGRAMMING BY ABACUS  THIS IS NOW MY SIXTH SCREEN TOWARDS MIND BOMB AND I REALLY DO NOT KNOW WHAT I AM GOING TO DO NEXT STILL YOU WILL PROBABLY KNOW BY NOW SO I HOPE YOU LIKE IT...    MANY THANKS TO THE ENORMOUS AMOUNT OF PEOPLE WE SAW AT THE PC SHOW IN SEPTEMBER.  IT REALLY MADE US FEEL GOOD.  IF YOU HAPPENED TO BE AROUND OUR STAND YOU WOULD HAVE SEEN JUST ABOUT EVERY SINGLE GREAT PROGRAMMER ON THE ST.  WE EVEN HAD A VISIT FROM ES OF TEX ON THE WEDNESDAY. PLUS RICHARD KARSMAKERS AND STEFAN POSTHUMA OF ST NEWS. JOHN PHILLIPS AUTHOR OF NEBULUS. MEMBERS OF THE BULLFROG TEAM. ROB POVEY WHO WROTE QUARTET FOR MICRODEAL AND ALL SORTS OF OTHER PEOPLE. WE HAD AN ABSOLUTELY FABULOUS WEEK AND ALL OF US HAD JOB OFFERS FROM VARIOUS PEOPLE. SPAZ AND SAMMY JOE NOW WORK AS TRANSLATORS FOR GFA SYSTEM TECHNIK. SPAZ HAS A GRAPHICS ARTIST JOB. WE WERE ALSO OFFERED JOBS BY AMONGST OTHER HEWSON AND BEST OF ALL  FROM THE MEGA MIGHTY THALION SOFTWARE HOME OF THE DEMO WORLDS FINEST PROGRAMMERS. TEX. TNT CREW. LEVEL SIXTEEN. THE CAREBEARS ETC  THIS WAS JUST TO GOOD TO SAY NO TO SO I AM PROBABLY GOING TO WORK THERE NEXT SUMMER IN GUETERSLOH. JUST WAIT UNTIL YOU SEE SOME  OF THALIONS GAMES. THEY ARE ABSOLUTELY FANTASTIC. THEY WILL BE THE BEST GAMES PRODUCERS ON THE ST INSIDE A YEAR. THAT I TRULY BELIEVE . WELL I THINK THAT IS QUITE ENOUGH FOR ONE SCROLLINE. SO LETS WWWWWWWRRRRRRRAAAAAAAPPPPPPP....................                  ";
     this.running = true;
-    
+    this.shadowCan = new canvas(640,400);
+
     // Colorize balls
     const tmpcan = new canvas(64,62);
     const tmpctx = tmpcan.contex;
@@ -72,8 +73,7 @@ class MegaBalls {
     this.figures = [
       {color:0, points:[]},
       // Yellow cube
-      { color: 0, points: cube
-      },
+      { color: 0, points: cube },
       // red cross
       { color: 1, points: [
           { x: -35, y: 0, z: -35 }, { x: -35, y: 0, z: 35 }, { x: 35, y: 0, z: -35 }, { x: 35, y: 0, z: 35 },
@@ -88,14 +88,14 @@ class MegaBalls {
       // Big cyan third of circle
       { color: 5, points: this.circle(200, 'y', 2*Math.PI/3) },
       // Red cube
-      { color: 1, points: cube
-      },
+      { color: 1, points: cube },
       // Green variable size circle
       { color: 6, points: this.circle(200, 'y')},
       // Kind of ship
       { color: 7, points: [{ x:-90, y:0, z:0}, {x:-50, y:0, z:-50}, {x:-50, y:0, z:50}, {x:-70, y:-50, z:0},
           { x:90, y:0, z:0}, {x:50, y:0, z:-50}, {x:50, y:0, z:50}, {x:70, y:-50, z:0 } ]
       },
+      // Turquoise cube growing and shrinking
       {color: 8, points: cube}
     ];
 
@@ -109,54 +109,65 @@ class MegaBalls {
     // Animation sequences
     this.scenic = [
       {change:0, t:3},
+      // Yellow cube
       {change:1, effect:[this.appear, this.oscille, this.rotate1], t:2},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.rotate2, this.oscille], t:5},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.disappear, this.oscille], t:2.5},
       {change:0, t:2.5},
+      // red cross
       {change:2, effect:[this.appear, this.oscille, this.rotate1], t:2},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.rotate2, this.oscille], t:5},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.disappear, this.oscille], t:2.5},
       {change:0, t:2.5},
+      // Green circle
       {change:3, effect:[this.appear, this.oscille, this.rotate1], t:2},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.rotate3, this.oscille], t:5},
       {effect:[this.rotate1, this.oscille], t:2.5},
       {effect:[this.rotate0, this.disappear], t:2.5},
       {change:0, t:2.5},
+      // Big gray circle
       {change:4, effect:[this.appear, this.rotate1, this.syncRebound], t:2},
       {effect:[this.rotate1, this.syncRebound], t:10},
       {effect:[this.disappear, this.rotate1, this.syncRebound], t:2.5},
       {change:0, t:2.5},
+      // Big shifted magenta circle
       {change:5, effect:[this.appear, this.rotate1, this.shiftedRebound], t:2},
       {effect:[this.rotate1, this.shiftedRebound], t:10},
       {effect:[this.disappear, this.rotate1, this.shiftedRebound], t:2.5},
       {change:0, t:2.5},
+      // Big cyan third of circle
       {change:6, effect:[this.appear, this.rotate1, this.shiftedRebound], t:2},
       {effect:[this.rotate1, this.shiftedRebound], t:10},
       {effect:[this.disappear, this.rotate1, this.shiftedRebound], t:2.5},
       {change:0, t:2.5},
+      // Red cube
       {change:7, effect:[this.appear, this.oscille2, this.rotate1, this.rebound2], t:2},
       {effect:[this.rotate1, this.oscille2, this.rebound2], t:10},
       {effect:[this.disappear, this.oscille2, this.rebound2], t:2.5},
+      {change:0, t:2.5},
+      // Green variable size circle
       {change:8, effect:[this.varsize, this.syncRebound, this.rotate1, this.appear], t:2},
       {effect:[this.varsize, this.rotate1, this.syncRebound], t:10},
       {effect:[this.varsize, this.rotate1, this.syncRebound, this.disappear], t:2.5},
+      {change:0, t:2.5},
+      // Kind of ship
       {change:9, effect:[this.appear, this.rotate1, this.round], t:2},
       {effect:[this.rotate1, this.round], t:2.5},
       {effect:[this.rotate4, this.round], t:5},
       {effect:[this.rotate1, this.round], t:2.5},
       {effect:[this.disappear, this.rotate1, this.round], t:2.5},
       {change:0, t:2.5},
+      // Turquoise cube growing and shrinking
       {change:10, effect:[this.appear, this.rotate1, this.oscille, this.varcube], t:2},
       {effect:[this.rotate1, this.oscille, this.varcube], t:2.5},
       {effect:[this.rotate2, this.oscille, this.varcube], t:5},
       {effect:[this.rotate1, this.oscille, this.varcube], t:2.5},
       {effect:[this.rotate1, this.oscille, this.varcube, this.disappear], t:2.5},
-      {change:0, t:2.5},      
     ];
     this.ctrScenic = -1;
     this.ctrFrames = 0;
@@ -295,10 +306,37 @@ class MegaBalls {
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
       this.scrolltext.init(this.can, this.font, 12);
-      this.starfield = new starfield3D(this.can, 400, 3, 640, 156, 320, 0, '#fff', 100, 0,64);
+      this.starfield = new starfield3D(this.can, 200, 3, 640, 156, 320, 0, '#fff', 100, 0,64);
+      this.starfield.draw = Object.getPrototypeOf(this).overrideDrawStarfield.bind(this.starfield);
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
+  }
+
+  // Overrides "draw" method in the starfield to draw points instead of lines.
+  overrideDrawStarfield(){
+    var tmp=this.dest.contex.strokeStyle;
+    var tmp2 = this.dest.contex.globalAlpha;
+    var tmp3 = this.dest.contex.lineWidth;
+    this.dest.contex.globalAlpha=1;
+    this.dest.contex.fillStyle=this.color;
+
+    for(var i=0;i<this.n;i++){
+      this.test=true;
+      this.star_x_save=this.star[i][3];
+      this.star_y_save=this.star[i][4];
+      this.star[i][0]+=(this.centx-this.x)>>4; if(this.star[i][0]>this.x<<1) { this.star[i][0]-=this.w<<1; this.test=false; } if(this.star[i][0]<-this.x<<1) { this.star[i][0]+=this.w<<1; this.test=false; }
+      this.star[i][1]+=(this.centy-this.y)>>4; if(this.star[i][1]>this.y<<1) { this.star[i][1]-=this.h<<1; this.test=false; } if(this.star[i][1]<-this.y<<1) { this.star[i][1]+=this.h<<1; this.test=false; }
+      this.star[i][2]-=this.star_speed; if(this.star[i][2]>this.z) { this.star[i][2]-=this.z; this.test=false; } if(this.star[i][2]<0) { this.star[i][2]+=this.z; this.test=false; }
+      this.star[i][3]=this.x+(this.star[i][0]/this.star[i][2])*this.star_ratio;
+      this.star[i][4]=this.y+(this.star[i][1]/this.star[i][2])*this.star_ratio;
+      if(this.star_x_save>0&&this.star_x_save<this.w&&this.star_y_save>0&&this.star_y_save<this.h&&this.test){
+        this.dest.contex.fillRect(this.star_x_save+this.offsetx,this.star_y_save+this.offsety, 2, 2);
+      }
+    }
+    this.dest.contex.strokeStyle=tmp;
+    this.dest.contex.globalAlpha=tmp2;
+    this.dest.contex.lineWidth=tmp3;
   }
 
   // Main loop, called by Codef requestAnimFrame
@@ -352,23 +390,27 @@ class MegaBalls {
     const zoom = this.cameraZoom * this.perspectiveZoom;
     
     // Shadows
-    this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    const shctx = this.shadowCan.contex;
+    this.shadowCan.clear();
+    shctx.fillStyle = '#000';
     rotated.forEach(p => {
       const size = Math.abs(zoom + (p.z+100) * zoom * this.ballsPerspective);
-      this.ctx.beginPath();
-      this.ctx.ellipse(
+      shctx.beginPath();
+      shctx.ellipse(
         320 + ~~(p.x*zoom + p.x * p.z*this.zPerspective),
-        250 + ~~((300-p.y)*zoom/3 + p.y * p.z*this.zPerspective),
-        32*size, 16*size,
+        200 + ~~(p.y*zoom + p.y * p.z*this.zPerspective + (400-p.y)*zoom/5),
+        32*size, 8*size,
         0, 0, 2*Math.PI
       );
-      this.ctx.fill();
+      shctx.fill();
     });
-    
+    this.ctx.globalAlpha = 0.4;
+    this.ctx.drawImage(this.shadowCan.canvas,0,0);
+    this.ctx.globalAlpha = 1.0;
+
     // And balls
     rotated.forEach(p => {
       const size = zoom + (p.z+100) * zoom * this.ballsPerspective;
-        
       this.balls[this.ballColor].draw(
         this.can,
         320 + ~~(p.x*zoom + p.x * p.z*this.zPerspective),
@@ -390,16 +432,6 @@ class MegaBalls {
 
   // Event processor
   onKeyPressed(event) {
-    switch(event.key){
-      case '+':
-        this.cameraZoom += 0.01;
-        console.log({zoom:this.cameraZoom});
-        break;
-      case '-':
-        this.cameraZoom -= 0.01;
-        console.log({zoom:this.cameraZoom});
-        break;
-    }
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
