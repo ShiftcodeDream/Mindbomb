@@ -118,6 +118,7 @@ class DiAhYeah {
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.changeTrack(6);
       this.zik.play();
       window.requestAnimFrame(this.main);
     });
