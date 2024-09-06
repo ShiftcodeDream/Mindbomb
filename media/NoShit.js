@@ -25,6 +25,9 @@ class NoShit {
   // Initialize the demo (all resources are already loaded)
   // Initialize scrolltexts here (for example)
   init() {
+    this.ctrSinH=0;
+    this.ctrSinV=-Math.PI/4;
+    
     this.section=1;
 
     this.all_done=0;
@@ -311,8 +314,25 @@ class NoShit {
 
       if (this.sinlogoon==1){
         this.distcanvas.clear();
-
+        
+        // Shiftcode's part of this demo : Dancing Mindbomb !
         this.distcanvas.contex.globalCompositeOperation='source-over';
+        let ay = this.ctrSinV;
+        let ax = this.ctrSinH;
+        for(let ys=0; ys<44; ys++){
+          let yd = 61+61*Math.sin(ay);   // Replace by "yd = 61+ys" to see only the horizontal distorsion effect
+          let xd = 115+115*Math.sin(ax); // Replace by "xd = 115" to see only the vertical distorsion effect
+          this.distcanvas.contex.drawImage(this.logo.img, 0,ys, 410,2, ~~xd,~~yd, 410,2);
+          ay -= Math.PI/150;
+          ax -= Math.PI/300;
+        }
+        this.ctrSinV += Math.PI/100;
+        this.ctrSinH += Math.PI/200;
+
+        this.distcanvas.contex.globalCompositeOperation='source-atop';
+        this.distcanvas.contex.drawImage(this.red_rasters.img, 0,0,1,124, 0,0,640,124);
+        this.distcanvas.draw(this.mycanvas,64,314);
+        // End of Shiftcode's section
       }
       window.requestAnimFrame(this.main);
     } else {
