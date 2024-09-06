@@ -11,13 +11,13 @@
 | 8 | DiMatrix.js | THE 2ND DIGITAL INSANITY GUEST SCREEN THE MATRIX SCREEN | Shiftcode | Done
 | 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
-| 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | 
+| 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | Shiftcode | WIP
 | 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | Done
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | Mellowman & Shiftcode | Done
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | Shiftcode | Done
 | 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | 
 | 16 | Vector | THE VECTORS SCREEN | Shiftcode | Done
-| 17 | NoShit | NO SHIT! | Mellowman | WIP
+| 17 | NoShit | NO SHIT! | Mellowman | Done
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
 | 19 | resetScreen | RESET SCREEN |
 
