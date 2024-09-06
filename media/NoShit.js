@@ -25,7 +25,6 @@ class NoShit {
   // Initialize the demo (all resources are already loaded)
   // Initialize scrolltexts here (for example)
   init() {
-    this.ctrDist=0; this.ctrInc=Math.PI/60; this.ctrSpeed=Math.PI/60; this.ampli=60; this.degrad; this.disTable = []; this.ctrStax=0;
     this.section=1;
 
     this.all_done=0;
@@ -69,17 +68,6 @@ class NoShit {
 	this.scrollcanvas1.contex.oImageSmoothingEnabled = false;
 	this.scrollcanvas1.contex.webkitImageSmoothingEnabled = false;
 
-    //prepare dists
-    this.stay(80);
-    this.sinus(40,40,5);
-    this.stay(40);
-    this.sinus(50,60,5);
-    this.stay(30);
-    this.sinus(8,8,1);
-    this.stay(40);
-    this.sinus(4,4,50);
-    //end 
-
 	this.prep_di_back2();
 
 	this.clr_offset=16;
@@ -87,21 +75,6 @@ class NoShit {
     this.running = true;
   }
 
-  sinus(amplitude, nb_steps, nb){
-    var step = 2*Math.PI/nb_steps;
-    if(nb_steps<0) nb_steps*=-1;
-    for(let j=0; j<nb; j++){
-      for(let i=0, a=0; i<nb_steps; i++, a+=step){
-        this.disTable.push(~~(amplitude * Math.sin(a)));
-      }
-    }
-  }
-
-  stay(nbTimes){
-    for(let k=0; k<nbTimes; k++)
-      this.disTable.push(0);
-  }
-  
   prep_di_back2(){
 	this.di_back3.clear();
 	this.backfont.print(this.di_back3,"   OK FOLKS", 64,  65);
@@ -338,42 +311,7 @@ class NoShit {
 
       if (this.sinlogoon==1){
         this.distcanvas.clear();
-        for (let y=0,c=this.ctrStax; y<76; y+=2,c+=0.5){
-          if(c >= this.disTable.length) c=80;
-          this.ctx.drawImage(this.logo.img,0,y,348,4, this.disTable[c]+146,y+50,348,4);
-        }
-        if(++this.ctrStax >= this.disTable.length) {
-          this.ctrStax = 80;
-          if (this.flip==1){
-            this.flip=2;
-          } else {
-            this.flip=1;
-          }
-        }
 
-        this.distcanvas.contex.globalCompositeOperation='source-atop';
-        this.red_rasters.draw(this.distcanvas,0,40,1,0,20,0.5);
-
-        if (this.flip==1) {
-          this.distcanvas.drawPart(this.mycanvas,-70,280,0,0,640,200,1,0,2,2);
-        }
-
-        if (this.flip==2) {
-          this.distcanvas.drawPart(this.mycanvas,-70,280,0,0,640,this.flipmax,1,0,2,2);
-          this.flipmax-=this.flipinc;
-          if (this.flipmax<=-1) {
-            this.flip=3;
-            this.flipmax=0;
-          }
-          // distcanvas.drawPart(mycanvas,-70,530,1,0,2,-2);
-        }
-        
-        if (this.flip==3) {
-          // distcanvas.drawPart(mycanvas,-70,530,0,0,640,200,1,0,2,-2);
-          this.distcanvas.drawPart(this.mycanvas,-70,530,0,0,640,this.flipmax,1,0,2,-2);
-          this.flipmax+=this.flipinc;
-          if (this.flipmax>200) this.flipmax=200;
-        }
         this.distcanvas.contex.globalCompositeOperation='source-over';
       }
       window.requestAnimFrame(this.main);
