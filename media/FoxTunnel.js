@@ -15,8 +15,8 @@ class FoxTunnel {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['Foxx.png', 'Foxx_64x40.png', 'Classic_16x16.png'])).then(data => {
-      [this.sprites, this.yellowFont, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['Foxx.png', 'Foxx_64x40.png', 'Classic_16x16.png', 'Nehc091m.sndh'])).then(data => {
+      [this.sprites, this.yellowFont, this.font, this.zik] = data;
     });
   }
 
@@ -115,7 +115,7 @@ class FoxTunnel {
       "",
       " HOW MUCH COSTS A SPRITE ?              ",
       "   1) 1 SCANLINE                        ",
-      "   2) 1a SCANLINES                      ",
+      "   2) 10 SCANLINES                      ",
       "   3) 313 SCANLINES                     ",
       "                                        ",
       "",
@@ -282,6 +282,7 @@ class FoxTunnel {
       this.can = new canvas(640, 540, "main");
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -407,6 +408,7 @@ class FoxTunnel {
   }
   
   stop() {
+    this.zik.stop();
     this.running = false;
   }
 
