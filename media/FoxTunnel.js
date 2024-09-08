@@ -8,6 +8,8 @@ class FoxTunnel {
     this.end = this.end.bind(this);
     this.screx = this.screx.bind(this);
     this.allStars = this.allStars.bind(this);
+    this.blabla = this.blabla.bind(this);
+    this.changeBlabla = this.changeBlabla.bind(this);
   }
 
   // Loads resources and returns a Promise
@@ -56,6 +58,208 @@ class FoxTunnel {
     this.rotationSpeed = 0.0;
     this.ctrSpr = 0;
     
+    this.blablaCan = new canvas(640,96);
+    // Mode : 1=write, 2=clear
+    this.blablaMode = 1;
+    this.blablaFrames = 270;
+    this.blablaLineCtr = -1;
+    this.blablaX = 0;
+    this.blablaY = 0;
+    this.blablaLetter = 0;
+    this.blablaText = [
+      "      THIS IS THE FOXX-STARTUNNEL       ",
+      "----------------------------------------",
+      "   THIS IS OUR PART OF THE LOST-BOYSp   ",
+      "        MIND-BOMB DEMO !!!!!!!!!!!      ",
+      "",
+      "      FOXX CONSISTS OF 3 ACTIVE AND 2   ",
+      "            PASSIVE MEMBERS.            ",
+      "         THE ACTIVE ONES ARE :          ",
+      "         (IN NO SPECIAL ORDER)          ",
+      "",
+      "               > CHUCK <                ",
+      "       (MASTER-EXEC CODER, SWAPPER)     ",
+      "              > TANGENS <               ",
+      "      (MASTER-EXEC SOUNDMAN,  CODER)    ",
+      "               > RAGE <                 ",
+      "         (GRAPHICS, LAME CODING)        ",
+      "",
+      "         THE PASSIVE ONES ARE :         ",
+      "               [ GAG [                  ",
+      "       (ZOCKING ALL DAY AND NIGHT)      ",
+      "               [ BOY [                  ",
+      "  (DOING STRANGE THINGS WITH HIS AMIGA) ",
+      "",
+      "   THE CREDITS FOR THIS DEMO GO TO :    ",
+      "                                        ",
+      "   CHUCK-CODING, COLORPALETTES, TEXT .. ",
+      "    RAGE-LOGODESIGN, TEXT ..            ",
+      " TANGENS-MUSIC                          ",
+      "",
+      "     IF YOU WANT TO READ SOMETHING      ",
+      "   INTERESTING YOU SHOULD BETTER READ   ",
+      "     THE SCROLLER JUST BELOW THIS.      ",
+      "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[",
+      "",
+      "                                        ",
+      "WARNING! WARNING! WARNING! WARNING! WARN",
+      ">>>> GO ON READING AT YOUR OWN RISK <<<<",
+      "ING! WARNING! WARNING! WARNING! WARNING!",
+      "",
+      " STILL THERE ??                         ",
+      "  FIRST MAKE SURE THAT THERE IS NO ONE  ",
+      "       UNDER 18 WATCHING THIS DEMO      ",
+      "",
+      " TO PREVENT YOU FROM GETTING INSANE YOU ",
+      " WILL HAVE TO PASS THE FOLLOWING TEST : ",
+      "",
+      " HOW MUCH COSTS A SPRITE ?              ",
+      "   1) 1 SCANLINE                        ",
+      "   2) 1a SCANLINES                      ",
+      "   3) 313 SCANLINES                     ",
+      "                                        ",
+      "",
+      " YES, YOU HAVE GUESSED IT !!!!          ",
+      " THE CORRECT ANSWER IS :                ",
+      "     --- 1 DM AT THE NEXT SHOP.         ",
+      "                                        ",
+      "                             (HAWHAW)   ",
+      "",
+      "   HAVE YOU ALREADY NOTICED THAT YOU    ",
+      "   CAN USE THE KEYS 1-9 FOR DIFFERENT   ",
+      "         STARFIELD-PALETTES.            ",
+      " YOU CAN ALSO USE THE CURSOR RIGHT AND  ",
+      "   LEFT KEYS FOR MANIPULATING THE STCS  ",
+      "   (STARFIELD-TURNING-CONTROL-SYSTEM)   ",
+      "",
+      "   NOW SOME OF THE LATEST FOXX NEWS :   ",
+      "SOME PEOPLE OF FOXX ARE NOW PROFESSIONAL",
+      "            GAME-DESIGNERS              ",
+      "    OF CAUSE WE WON'T SAY AT WHICH      ",
+      "           COMPANY WE ARE.              ",
+      "",
+      " BUT WE ARE SURE YOU WILL RECOGNIZE US. ",
+      "       JUST WATCH OUT WHEN YOU ARE      ",
+      "           BUYING NEW GAMES.            ",
+      " KNOWING THIS YOU WON'T BE SURPRISED TO ",
+      "HEAR: FOXX WON'T CRACK ANY GAMES NO MORE",
+      "",
+      "  BUT DON'T WORRY: IF WE HAVE THE TIME  ",
+      "    WE WILL CONTINIUE TO MAKE DEMOS     ",
+      "              BIT BY BIT.               ",
+      "                                        ",
+      "                            @ TEX       ",
+      "                              UNION 1989",
+      "",
+      "    WE BORROWED THIS TEX(T) FROM THE    ",
+      "  UNION-DEMO BECAUSE WE ARE IN THE SAME ",
+      "             SITUATION NOW.             ",
+      "                                        ",
+      "",
+      "   SOME TIME AGO WE DICITED TO MAKE A   ",
+      " MEGA-DEMO BUT THEN I BEGAN TO WORK FOR ",
+      "             TEXS' COMANY.              ",
+      "  BECAUSE OF THIS WE NEVER FINISHED IT  ",
+      "    AND NOW THE SCREENS ARE TOO OLD.    ",
+      "",
+      " NOW WE WILL ONLY DO SOME SINGLE SCREENS",
+      "YESTERDAY WE RECEIVED A LETTER FROM THE ",
+      " REPLICANTS AND THEY INVITED US TO MAKE ",
+      "   A SCREEN FOR THEIR MEGA-DEMO SO YOU  ",
+      " WILL SEE ANOTHER SCREEN BY FOXX IN THE ",
+      "          - REPLICANTS DEMO -           ",
+      "",
+      "         IS ANYBODY OUT THERE WHO       ",
+      " KNOWS ANYTHING ABOUT THE ATARI LYNX ?? ",
+      " WE GET A HIDDEN ORGASM EACH TIME WE SEE",
+      "    THIS WOUNDERFUL PIECE OF HARDWARE   ",
+      "              IN A MAGAZINE.            ",
+      "",
+      " IF YOU WANT TO GET IN CONTACT WITH US, ",
+      "         WRITE TO CHUCK OR RAGE :       ",
+      "----------------------------------------",
+      "          PLK 088243 C                  ",
+      "          D-2350 NEUMUENSTER            ",
+      "          WEST-GERMANY                  ",
+      "",
+      "      NOW WE WILL COME TO THE MOST      ",
+      " INTERESTING PART OF EVERY SCROLLTEXT --",
+      "-- THE GREETINGS !                      ",
+      "                                        ",
+      "  FIRST GREETINGS TO ALL OUR FRIENDS :  ",
+      "",
+      " -TEX                                   ",
+      " (DON'T WORRY, NEXT TIME WE MEET I WILL ",
+      " BRING SOME BOELKSTOFF WITH ME, DARYL)  ",
+      " - THE MANIAX                           ",
+      "     AND THE WHOLE SOFTWARE FOUNDATION  ",
+      " (THANK YOU VERY MUCH FOR THE SOFT)     ",
+      "",
+      " -LOST BOYS                             ",
+      " (THANX FOR INVITING US TO YOUR DEMO)   ",
+      " -REPLICANTS                            ",
+      " (IS IT TRUE THAT SNAKE HAS A BIG NOSE?)",
+      " -THE CAREBEARS                         ",
+      " (HAVE YOU FINISHED YOUR COPYPARTYDEMO?)",
+      "",
+      " -DIGITAL INSANITY                      ",
+      " (REALLY CRAZY LETTERS, STEFAN)         ",
+      " -STD                                   ",
+      " (HOPE WE CAN MEET AGAIN, SOON)         ",
+      " -TNT CREW                              ",
+      " (I REALLY LIKE YOUR SAMPLE-SOFTWARE)   ",
+      "",
+      " -ULM                                   ",
+      " (I'M LOOKING FORWARD TO YOUR MEGA-DEMO)",
+      " -TNT                                   ",
+      " (REALLY FAST 3D STUFF)                 ",
+      " -DELIGHT                               ",
+      " (HEY JABBA, WHERE IS MY DISK ?)        ",
+      "",
+      " -GIGABYTE CREW                         ",
+      " (HOPE TO MEET YOU ON THE CEBIT)        ",
+      " -MAGNETIC                              ",
+      " (YOU WILL GET MY REPLY SOON)           ",
+      " -GCA                                   ",
+      " (HI JOE)                               ",
+      "",
+      "                  NOW                   ",
+      "  WE'LL COME TO THE -NORMAL- GREETING : ",
+      "  (THAT MEANS TO PEOPLE WE DON'T KNOW   ",
+      "               VERY WELL)               ",
+      "",
+      "      -DELTA FORCE, LEVEL 16, STCS-     ",
+      "               AND 42 CREW              ",
+      " (NICE TO HAVE MET YOU ON THE CSS-PARTY)",
+      "           OTHER GREETINGS TO :         ",
+      "                < GHOST >               ",
+      "             < 2 LIFE CREW >            ",
+      "",
+      "                < SYNC >                ",
+      "           < FLEXIBLE FRONT >           ",
+      "         < THE CONSTELLATIONS >         ",
+      "                < MCA >                 ",
+      "             < THE VISION >             ",
+      "     AND ALL MEMBERS OF AENIGMATICA     ",
+      "",
+      "            < ST CONNEXION >            ",
+      "                < DMA >                 ",
+      "             < AUTOMATION >             ",
+      "          < XXX INTERNATONAL >          ",
+      "               < NEXT >                 ",
+      "             < BRAINPOWER >             ",
+      "",
+      "            < IN FLAGRANTI >            ",
+      "              < NO CREW >               ",
+      "         < THE BLADE RUNNERS >          ",
+      "               < VECTOR >               ",
+      "                                        ",
+      ".. AND TO ALL THE GUYS I HAVE FORGOTTEN ",
+      "",
+      "                                        ",
+      "                        .... LET'S WRAP "
+    ];
+    this.changeBlabla();
     this.running = true;
   }
 
@@ -69,6 +273,7 @@ class FoxTunnel {
       s: 5 + 5 * r()
     }
   }
+  
   // Starts the demo and returns a Promise that will be resolved at the end
   // of the demo.
   start() {
@@ -87,6 +292,7 @@ class FoxTunnel {
       this.can.clear();
       this.allStars();
       this.bees();
+      this.blabla();
       this.screx();
       window.requestAnimFrame(this.main);
     } else {
@@ -94,6 +300,49 @@ class FoxTunnel {
     }
   }
 
+  blabla(){
+    if(this.blablaFrames-- < 0){
+      switch(this.blablaMode){
+        case 1:
+          const text = this.blablaText[this.blablaLineCtr];
+          this.font.print(this.blablaCan, text.charAt(this.blablaLetter++), this.blablaX, this.blablaY);
+          this.blablaX += 16;
+          if(this.blablaLetter >= text.length)
+            this.changeBlabla();
+           this.blablaFrames = 1;
+          break;
+        case 2:
+          this.blablaCan.contex.clearRect(0, this.blablaY++, 640, 1);
+          if(this.blablaY >= 96){
+            this.blablaMode = 1;
+            this.blablaY = 0;
+             this.blablaFrames = 20;
+          }
+          break;
+      }
+    }
+    this.blablaCan.draw(this.can, 0, 340);
+  }
+  
+  changeBlabla(){
+    this.blablaX = 0;
+    this.blablaLetter = 0;
+    this.blablaY += 16;
+    
+    this.blablaLineCtr++;
+    if(this.blablaLineCtr >= this.blablaText.length){
+      this.blablaLineCtr = 0;
+      this.blablaY = 0;
+      this.blablaMode = 2;
+       this.blablaFrames = 100;
+    }else if(this.blablaText[this.blablaLineCtr].length == 0){
+      this.blablaLineCtr++;
+      this.blablaY = 0;
+      this.blablaMode = 2;
+       this.blablaFrames = 100;
+    }
+  }
+  
   bees(){
     let i=0,x,y;
     for(i=0; i<3; i++){
