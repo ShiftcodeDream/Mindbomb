@@ -50,6 +50,11 @@ class ParaScroll {
     this.ctr = 0;
     this.scrollPos = 0;
     this.scrollSpeed = 2;
+    let p = "003-004-005-007 203-204-205-207 303-304-305-307 303-404-405-407 303-404-505-507 303-404-505-707".split(' ');
+    p = p.concat(p.toReversed());
+    console.log(p);    
+    this.palettes = p.map(pal=>pal.split('-').map(coul=>coul.split('').map(k=>k*32)));
+    console.log(this.palettes);
     
     this.sprites.initTile(32,26);
     this.font.initTile(20,20,32);
@@ -99,10 +104,9 @@ class ParaScroll {
     for(x=xpos; x<640+64; x+=64)
       this.ctx.drawImage(this.back.canvas, x, ypos);
     
-    xpos = -~~(640 + 320*Math.sin(this.ctr*1.36+0.568) + 320*Math.sin(this.ctr*1.38+0.686)) % 64;
     ypos = -~~(632 + 632*Math.sin(this.ctr*2.357+1.0574)*Math.sin(this.ctr*1.4587+2.75)) % 64;
     for(y=ypos; y<400+64; y+=64)
-      for(x=xpos; x<640+64; x+=64)
+      for(x=0; x<640+64; x+=64)
         this.ctx.drawImage(this.bubles.img, x, y);
   }
   
@@ -119,7 +123,7 @@ class ParaScroll {
     let x,y,ctrData;
     this.scrollCan.clear();
     this.scrolltext.draw(0);
-    this.pal = "303,404,505,607".split(',').map(coul=>coul.split('').map(k=>k*32));
+    this.pal = this.palettes[~~(6+6*Math.cos(this.ctr*0.3-3.1415))];
     this.pixels = this.ctx.getImageData(0,0,640,400);
     this.pixd = this.pixels.data;
     
