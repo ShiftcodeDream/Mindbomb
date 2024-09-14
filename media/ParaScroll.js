@@ -9,6 +9,7 @@ class ParaScroll {
     this.tiles = this.tiles.bind(this);
     this.errance = this.errance.bind(this);
     this.big = this.big.bind(this);
+    this.colorize = this.colorize.bind(this);
   }
 
   // Loads resources and returns a Promise
@@ -30,7 +31,8 @@ class ParaScroll {
     const cible = ct.getImageData(0,0,64,64);
     "033-055-067 033-055-077 033-055-076 033-055-075 033-054-074 033-053-073 031-052-072 030-051-071 130-050-070 230-150-170 330-250-270 330-350-370 330-450-470 330-550-570 330-550-670 330-550-770 330-550-750 330-550-750 330-540-740 320-530-730 310-520-730 310-520-720 300-510-710 300-500-700 301-501-701 302-502-702"
       .split(' ').forEach((palette, numPal) => {
-      const pal = palette.split('-').map((coul,idx) => coul.split('').map(k=>k*32+1+idx));
+      // A little help of steganography : code information (color index) into the pixel value
+      const pal = palette.split('-').map((coul,idx) => coul.split('').map(k=>k*32 + idx));
       for(i=0; i<source.data.length; i+=4){
         if(source.data[i+2] > 0){
           switch(source.data[i+2]){
@@ -46,15 +48,16 @@ class ParaScroll {
       ct.putImageData(cible, 0, numPal*64);
     });
     this.ctr = 0;
+    this.scrollPos = 0;
+    this.scrollSpeed = 2;
     
     this.sprites.initTile(32,26);
     this.font.initTile(20,20,32);
-    this.scrollCan = new canvas(32,20);
+    this.scrollCan = new canvas(40,20);
     this.scrolltext = new scrolltext_horizontal();
-    this.scrolltext.scrtxt = "AAAAAAHHHHHHHH";
+    this.scrolltext.scrtxt = "     HOW ABOUT THIS FOR A BIG MOTHER OF A SCROLLINE????  WRITTEN IN ABOUT 2 DAYS DURING A FIRST QUIET AND BORING WEEK AT MANCHESTER UNIVERSITY. I HAD QUITE A BIT OF TIME ON MY HANDS AND SOME IDEAS IN MY HEAD SO THIS SCREEN IS THE RESULT. FOR ANYONE WHO MAY BE INTERESTED HERE IS A BREAK DOWN TIMINGS FOR EACH BIT. THE 2 LAYER PARALLAX BACKGROUND TAKES ABOUT 50 PERCENT, POSSIBLY A LITTLE MORE. THE MUSIC TAKES ABOUT 3-5 PERCENT THE SCROLLINE TAKES ABOUT 30-40 PERCENT ALTHOUGH IT VARIES A LOT AND THE SPRITES MAKE UP THE DIFFERENCE.  FOR ANYONE WHO IS INTERESTED THIS SCROLLINE IS BEING WRITTEN ON 11-10-89 BY MANIKIN SITTING IN A FLAT IN MANCHESTER LATE AT NIGHT IN THE PROCESS OF MAKING A WORKING COPY OF MIND BOMB UP WITH THE SCREENS THAT I CURRENTLY HAVE, NUMBERING 5 IN ALL I THINK. THIS WILL PROBABLY SURVIVE AS A SCROLLINE IN THE FINAL DEMO. WELL IF YOUR READING THIS THEN IT DID ANYWAY!! AND HENCE IT WAS THE FIRST SCROLLINE TO BE WRITTEN FOR THIS DEMO. AS WERE ALL SO BLOODY LAZY IT WILL PROBABLY NEVER BE REWRITTEN. LOVE AND KISSES TO EVERYONE I KNOW AND ESPECIALLY TO MY FLAT MATES IAN ,PHIL ,SVEN(A NUTTY NORWEGIAN!!) ,JASPER(CHICKENS!) ,SIMON(SUPER SPRINT LOVER!), ALEX(CANADIAN BASTARD!!)  THEY HAVE TO PUT UP WITH MY INCESSANT KEYBOARD TAPPING AND THAT INCREDIBLY ANNOYING BEEP WHICH I ALWAYS FORGET TO TURN OFF!!  YES WELL THAT SCROLLINE DID INDEED SURVIVE TO BE INCLUDED IN THE ACTUAL DEMO. NOW NEARLY 6 MONTHS(!!) LATER I HAVE JUST PUT TOGETHER THE FINAL COPY OF THIS SCREEN AND I AM PUTTING IT ONTO THE NOW ALMOST COMPLETE LOST BOYS MIND BOMB DEMO. THE DISK IS DUE FOR RELEASE ON APRIL 18TH 1990 (YES, THIS YEAR!) AND AS TODAYS DATE IS THE 26TH OF MARCH I HAVE JUST ABOUT 2 WEEKS MORE TIME TO WORK ON IT BEFORE I GO ON HOLIDAY!! AS THIS SCROLLINE IS QUITE A SLOW ONE I IMAGINE THAT THE ONLY PERSON EVER TO READ THIS SCROLL WILL BE ME OR SOME ONE WHO HACKS IT. SO LETS TALK ABOUT PROTECTION!! I HAVE ATTEMPTED TO PROTECT THIS DEMO QUITE WELL BUT IT REALLY IS SUCH A HASSLE THAT ANY DEDICATED HACKER WILL PROBABLY MANAGE IT IN ABOUT 10 MINUTES. I HAVE USED A SPECIAL PROTECTION ROUTINE THAT I WROTE LAST YEAR. IF I PERSEVERED THEN I RECKON IT COULD BE MADE INTO I REAL BASTARD OF A PIECE OF PROTECTION. I KNOW THAT NICK OF TCB HAS USED A SIMILAR TECHNIQUE TO MINE AND HIS WAS BETTER WRITTEN BUT APPARANTELY IT HAD BUGS IN IT TO  AS I KNOW THAT THE GAME AND THE DEMO THAT HE USED IT ON HAVE BOTH BEEN HACKED IN DOUBLE QUICK TIME!!.  ANYWAY IF YOU HAVE HACKED THIS DEMO THEN IT DIOES NOTHING MORE THEN PROVE WHAT A LAME CODER YOU REALLY ARE. SO DON'T EXPECT ANY PRAISE FROM US FOR YOUR ACHIEVMENT. FUCKING GREETINGS TO ALL CODE RIPPERS ESPECIALLY GRIFF AND PHANTOM!!!!!!!               WRAP!!";
     this.scrolltext.init(this.scrollCan, this.font, 1);
     this.paused = false; // TODO : remove
-    this.done = false; // TODO : remove
     this.running = true;
   }
 
@@ -113,48 +116,46 @@ class ParaScroll {
   }
   
   big(){
-    const pal = "303,404,505,607".split(',').map(coul=>coul.split('').map(k=>k*32));
-    const pixels = this.ctx.getImageData(0,0,640,400);
-    const {data} = pixels;
-    for(let i=data.length/2; i<data.length; i+=4){
-      let couleur = (data[i]<<16) | (data[i+1]<<8) | data[i+2];
-      let idx=-1;
-      switch(couleur){
-        case 0x400000:
-          idx=0; break;
-        case 0x600000:
-          idx=1; break;
-        case 0x800000:
-          idx=2; break;
-        case 0xC00000:
-        case 0xE00000:
-          idx=3; break;
-        default:
-          idx=(data[i] & 7) -1;
-      }
-      if(idx>=0){
-        data[i] = pal[idx][0];
-        data[i+1] = pal[idx][1];
-        data[i+2] = pal[idx][2];
+    let x,y,ctrData;
+    this.scrollCan.clear();
+    this.scrolltext.draw(0);
+    this.pal = "303,404,505,607".split(',').map(coul=>coul.split('').map(k=>k*32));
+    this.pixels = this.ctx.getImageData(0,0,640,400);
+    this.pixd = this.pixels.data;
+    
+    const {data} = this.scrollCan.contex.getImageData(0,0,40,20);
+    for(y=0, ctrData=3; y<20; y++)
+      for(x=0; x<40; x++, ctrData+=4)
+        if(data[ctrData])
+          this.colorize(x*16, y*16+this.scrollPos);
+    
+    this.ctx.putImageData(this.pixels,0,0);
+    
+    this.scrollPos += this.scrollSpeed;
+    if(this.scrollPos <= 0 || this.scrollPos >= 80)
+      this.scrollSpeed *= -1;
+  }
+  
+  // Colorizes a 16x16 pixels square on the screen
+  colorize(xpos, ypos){
+    let idx,idy,ctrx,ctry, coul,coulnum;
+    for(ctry=0, idy=ypos*4*640 + xpos*4; ctry<16; ctry++, idy+=640*4){
+      for(ctrx=0, idx=idy; ctrx<16; ctrx++, idx+=4){
+        coul = (this.pixd[idx]<<16) | (this.pixd[idx+1]<<8) | this.pixd[idx+2];
+        switch(coul){
+          case 0x400000: coulnum=0; break;
+          case 0x600000: coulnum=1; break;
+          case 0x800000: coulnum=2; break;
+          case 0xC00000:
+          case 0xE00000: coulnum=3; break;
+          // Use of steganography : retrieve color index coded in the color value
+          default: coulnum = this.pixd[idx] & 3;
+        }
+        this.pixd[idx]   = this.pal[coulnum][0];
+        this.pixd[idx+1] = this.pal[coulnum][1];
+        this.pixd[idx+2] = this.pal[coulnum][2];
       }
     }
-    this.ctx.putImageData(pixels,0,0);
-//    const ct = this.scrollCan.contex;
-//    this.scrollCan.clear();
-//    ct.globalCompositeOperation = 'source-over';
-//    this.scrolltext.draw(0);
-//    ct.globalCompositeOperation = 'source-atop';
-//    ct.fillStyle = "#F0F";
-//    ct.fillRect(0,0,32,20);
-//    this.ctx.globalCompositeOperation = 'color';
-//    this.ctx.drawImage(this.scrollCan.canvas, 0,0,32,20, 0,0,640,320);
-//    this.ctx.globalCompositeOperation = 'source-over';
-
-//    ct.fillStyle = "#F0F";
-//    ct.fillRect(0,0,32,20);
-//    this.ctx.globalAlpha = 0.5;
-//    this.ctx.drawImage(this.scrollCan.canvas, 0,0,32,20, 0,0,640,320);
-//    this.ctx.globalAlpha = 1.0;
   }
   
   stop() {
