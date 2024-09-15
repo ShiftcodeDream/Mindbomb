@@ -15,8 +15,8 @@ class ParaScroll {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['Red_LB.png', 'Red_Bubles.png', 'Carre_LB.png', 'Dalton_20x20.png'])).then(data => {
-      [this.sprites, this.bubles, this.backLogo, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['Red_LB.png', 'Red_Bubles.png', 'Carre_LB.png', 'Dalton_20x20.png', 'ParaScroll.sndh'])).then(data => {
+      [this.sprites, this.bubles, this.backLogo, this.font, this.zik] = data;
     });
   }
 
@@ -75,6 +75,7 @@ class ParaScroll {
       this.ctx.oImageSmoothingEnabled = false;
       this.ctx.webkitImageSmoothingEnabled = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -158,6 +159,7 @@ class ParaScroll {
   }
   
   stop() {
+    this.zik.stop();
     this.running = false;
   }
 
