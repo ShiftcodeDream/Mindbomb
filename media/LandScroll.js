@@ -11,8 +11,8 @@ class LandScroll {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return this.demoManager.loadResource('mind-logo1.png').then(introImage => {
-      this.introImage = introImage;
+    return Promise.all(this.demoManager.loadResource(['LandscrollSprites.png','LandscrollBack.png', ])).then(data => {
+      [this.sprites, this.backs] = data;
     });
   }
 
@@ -27,10 +27,9 @@ class LandScroll {
   start() {
     return new Promise(endCallback => {
       this.endCallback = endCallback;
-      this.can = new canvas(640, 400, "main");
+      this.can = new canvas(768, 540, "main");
       this.ctx = this.can.contex;
       document.body.addEventListener('keydown', this.onKeyPressed);
-      setTimeout(this.stop, 4500);
       window.requestAnimFrame(this.main);
     });
   }
@@ -38,11 +37,9 @@ class LandScroll {
   // Main loop, called by Codef requestAnimFrame
   main() {
     if (this.running) {
-      this.introImage.draw(this.can, 16, 16);
-      this.ctx.font = 'bold 24px "Comic sans MS", serif';
-      this.ctx.fillStyle = '#F80';
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText("This will be the " + this.constructor.name + " demo.", 320, 200);
+      this.ctx.drawImage(this.backs.img,0,0,1,200, 0,260,768,200);
+      this.ctx.fillStyle = "#0000C0";
+      this.ctx.fillRect(0,460,768,80);
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -66,4 +63,25 @@ class LandScroll {
       this.stop();
     }
   }
+  
+  gone(){
+    timer++;
+    mycanvas.fill('#000000');
+    scrollcanvas.fill('#000000');
+
+    //draw 20 tiny scrollers in a canvas
+    for(let i=0;i<20;i++)
+      myscrolltext.draw(i*10);
+
+    //draw the scroller canvas out on the main canvas
+    for(let i=0;i<160;i++)
+      scrollcanvas.drawPart(mycanvas,
+                            -i*7, 200+i,
+                            (300*Math.sin(timer*.001)+300)%10, i/4,
+                            320, 1,
+                            1, 0,
+                            i/9+4, 1);
+
+    requestAnimFrame(gone);
+  }  
 }
