@@ -2,10 +2,10 @@
 | - | --- | --- | --- | --- |
 | 0 | menuScreen.js | THE MAIN MENU | Shiftcode | Done
 | 1 | RedSector.js | THE RED SECTOR DEMO | Shiftcode | Done
-| 2 | LandScroll.js | THE LANDSCAPE SCREEN | 
+| 2 | LandScroll.js | THE LANDSCAPE SCREEN | Shiftcode | WIP
 | 3 | DiMindBomb.js | THE DIGITAL INSANITY GUEST SCREEN NUMBER 1 | Shiftcode | Done
 | 4 | MovingBack.js | THE MOVING BACKGROUND SCREEN | Mellowman | Done
-| 5 | ParaScroll.js | THE 2 LAYER MOVING BACKGROUND SCREEN | Shiftcode | WIP
+| 5 | ParaScroll.js | THE 2 LAYER MOVING BACKGROUND SCREEN | Shiftcode | Done
 | 6 | MegaBalls.js | THE 3D MEGABALLS SCREEN OR WHAT HAPPENS TO YOUR BALLS WHEN YOU MATURE!! | Shiftcode | Done
 | 7 | PoDo.js | THE P.D LIBRARY INFO SCREEN | Mellowman | Done
 | 8 | DiMatrix.js | THE 2ND DIGITAL INSANITY GUEST SCREEN THE MATRIX SCREEN | Shiftcode | Done
