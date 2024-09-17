@@ -25,8 +25,8 @@ class LandScroll {
     this.enableAliazing(this.scrollCan);
     this.enableAliazing(this.distCan);
     this.scrolltext = new scrolltext_vertical();
-    this.scrolltext.scrtxt = "   \\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]    AW SHIT IT'S A SCROLLING LINE!!  THOSE FUCKING LOST BOYS HAVE DONE IT AGAIN AND BLOWN MY MIND. GOOD DEMOS, FIRST SEEN ON THE AMIGA, NOW SHOWING, COURTESY OF THE LOST BOYS. BEST ON THE ST, MODESTY HAS  NEVER BEEN OUR STRONGEST POINT. WE ARE THE BEST SO FORGET THE REST!!! THIS DEMO HAS BEEN GRADUALLY WRITTEN, THEN RE-WRITTEN AND THEN HAD EVEN MORE BITS ADDED TO IT BETWEEN JUNE 1989 AND MARCH 1990. THIS MAKES IT ONE OF THE OLDEST SCREENS ON THIS DEMO.  THE TROUBLE WITH ALL OF THE CODING FOR THIS DEMO IS THAT WE KEPT ON LEARNING EXTRA  LITTLE TRICKS TO SPEED UP OUR CODE OR THOUGHT UP BETTER WAYS OF CODING OUR SCREENS WHICH ALLOWED US MORE TIME FOR OTHER THINGS. FOR INSTANCE THIS SCREEN WAS REWRITTEN COMPLETELY ON AT LEAST THREE SEPERATE OCCASIONS. AT ONE POINT IT WAS EVEN RUNNING WITH NO BORDERS ON THE SCROLLINE, BUT THIS WAS VERY COMPLEX  TO MANAGE AND SO WE GAVE THAT IDEA UP.   SPAZ'S GRAPHIX ARE REALLY EXCELLENT AND THE SIGNS LOOK GOOD.  AS YOU WOULD EXPECT IT USES 100 PERCENT OF THE AVAILABLE PROCESSOR TIME AND IS OPTIMIZED AS FAR AS WE FEEL NECESSARY.   I HAVE BEEN TRYING TO WORK OUT HOW MANY HOURS I HAVE WORKED ON THIS DEMO, AND THE RESULT IS REALLY SHOCKING I'M SURE THAT THIS MUST BE THE MOST  WORKED UPON DEMO IN THE HISTORY OF THE ST.  I CODED THE FIRST SCREEN IN ABOUT APRIL 1989 AND NOW 10 MONTHS LATER I'M STILL WORKING ON IT AND I DOUBT VERY MUCH IF IT WILL BE FINISHED  MUCH BEFORE APRIL 1990!!!!!!  WHO SAYS HACKERS ARE LAZY BASTARDS WHO RIP OF THE COMPUTER INDUSTRY. WE WORK HARDER THAN MOST FUCKING GAME DESIGNERS SO IF ANYONE SLAGS US OFF THEN FUCK THEM!!!!!! HAVE YOU TRIED THE ARROW KEYS ON THE KEYBOARD YET.     CLEVER HUH!  I WAS GOING TO MAKE THE SCREEN DO THAT AUTOMATICALLY BUT EVERYONE LIKES A BIT OF AUDIENCE PARTICIPATION ON DEMOS SO I LEFT IT TO YOU INSTEAD!  MY NEW STARFIELD HAS ALLOWED THIS SCREEN TO BECOME ONE OF MY FAVOURITES ON THE WHOLE DEMO. IT GETS THE VERY BEST OUT OF THE ST I THINK WITHOUT USING ANY SPECIAL TRICKS OR STUFF!.   I HAVE NOT BOVERED TO WORK OUT HOW MUCH PROCESSOR TIME EACH PART OF THE SCREEN TAKES BUT IT MUST GO SOMETHING LIKE THIS FOR ANYONE WHO IS INTERESTED.  STARFIELD 10 PERCENT, SPRITES (FULLY MASKED) 35-40 PERCENT, RASTER SCROLL 20 PERCENT AND THE SIGNS MAKE UP THE REST OF THE PROCESSOR TIME. THIS SCREEN DOES OF COURSE USE 100 PERCENT CPU TIME. (GOES WITHOUT SAYING REALLY!)   ANYWAY I CANNOT THINK OF ANYMORE THINGS TO WRITE IN THIS SCROLL SO I GUESS I'M GOING TO WRAP NOW.  HOPE YOU LIKED THIS!!!          WRAP!!!!!!!............. ";
-    this.scrolltext.init(this.scrollCan, this.font, 2);
+    this.scrolltext.scrtxt = "   \\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]    AW SHIT IT'S A SCROLLING LINE!!  THOSE FUCKING LOST BOYS HAVE DONE IT AGAIN AND BLOWN MY MIND. GOOD DEMOS, FIRST SEEN ON THE AMIGA, NOW SHOWING, COURTESY OF THE LOST BOYS. BEST ON THE ST, MODESTY HAS  NEVER BEEN OUR STRONGEST POINT. WE ARE THE BEST SO FORGET THE REST!!! THIS DEMO HAS BEEN GRADUALLY WRITTEN, THEN RE-WRITTEN AND THEN HAD EVEN MORE BITS ADDED TO IT BETWEEN JUNE 1989 AND MARCH 1990. THIS MAKES IT ONE OF THE OLDEST SCREENS ON THIS DEMO.  THE TROUBLE WITH ALL OF THE CODING FOR THIS DEMO IS THAT WE KEPT ON LEARNING EXTRA  LITTLE TRICKS TO SPEED UP OUR CODE OR THOUGHT UP BETTER WAYS OF CODING OUR SCREENS WHICH ALLOWED US MORE TIME FOR OTHER THINGS. FOR INSTANCE THIS SCREEN WAS REWRITTEN COMPLETELY ON AT LEAST THREE SEPERATE OCCASIONS. AT ONE POINT IT WAS EVEN RUNNING WITH NO BORDERS ON THE SCROLLINE, BUT THIS WAS VERY COMPLEX  TO MANAGE AND SO WE GAVE THAT IDEA UP.   SPAZ'S GRAPHIX ARE REALLY EXCELLENT AND THE SIGNS LOOK GOOD.  AS YOU WOULD EXPECT IT USES 100 PERCENT OF THE AVAILABLE PROCESSOR TIME AND IS OPTIMIZED AS FAR AS WE FEEL NECESSARY.   I HAVE BEEN TRYING TO WORK OUT HOW MANY HOURS I HAVE WORKED ON THIS DEMO, AND THE RESULT IS REALLY SHOCKING I'M SURE THAT THIS MUST BE THE MOST  WORKED UPON DEMO IN THE HISTORY OF THE ST.  I CODED THE FIRST SCREEN IN ABOUT APRIL 1989 AND NOW 10 MONTHS LATER I'M STILL WORKING ON IT AND I DOUBT VERY MUCH IF IT WILL BE FINISHED  MUCH BEFORE APRIL 1990!!!!!!  WHO SAYS HACKERS ARE LAZY BASTARDS WHO RIP OF THE COMPUTER INDUSTRY. WE WORK HARDER THAN MOST FUCKING GAME DESIGNERS SO IF ANYONE SLAGS US OFF THEN FUCK THEM!!!!!! HAVE YOU TRIED THE ARROW KEYS ON THE KEYBOARD YET.     CLEVER HUH!  I WAS GOING TO MAKE THE SCREEN DO THAT AUTOMATICALLY BUT EVERYONE LIKES A BIT OF AUDIENCE PARTICIPATION ON DEMOS SO I LEFT IT TO YOU INSTEAD!  MY NEW STARFIELD HAS ALLOWED THIS SCREEN TO BECOME ONE OF MY FAVOURITES ON THE WHOLE DEMO. IT GETS THE VERY BEST OUT OF THE ST I THINK WITHOUT USING ANY SPECIAL TRICKS OR STUFF!.   I HAVE NOT BOVERED TO WORK OUT HOW MUCH PROCESSOR TIME EACH PART OF THE SCREEN TAKES BUT IT MUST GO SOMETHING LIKE THIS FOR ANYONE WHO IS INTERESTED.  STARFIELD 10 PERCENT, SPRITES (FULLY MASKED) 35-40 PERCENT, RASTER SCROLL 20 PERCENT AND THE SIGNS MAKE UP THE REST OF THE PROCESSOR TIME. THIS SCREEN DOES OF COURSE USE 100 PERCENT CPU TIME. (GOES WITHOUT SAYING REALLY!)   ANYWAY I CANNOT THINK OF ANYMORE THINGS TO WRITE IN THIS SCROLL SO I GUESS I'M GOING TO WRAP NOW.  HOPE YOU LIKED THIS!!!          WRAP!!!!!!!............. ";
+    this.scrolltext.init(this.scrollCan, this.font, 1.5);
 
     this.ctrCenter = 0;
     this.shifted = 0;
@@ -50,6 +50,11 @@ class LandScroll {
         s.draw = Object.getPrototypeOf(this).overrideDrawStarfield.bind(s);
         return s;
       });
+      this.tlb = [
+        new TlbSprite(this.can, 64, this.sprites),
+        new TlbSprite(this.can, 480, this.sprites)
+      ];
+      setTimeout(()=> this.tlb.forEach(t => t.enable()), 1000);
 
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
@@ -91,6 +96,9 @@ class LandScroll {
       case 'p':
         this.paused = !this.paused; // TODO : remove
         break;
+      case 'l':
+        console.log(this);
+        break;
       case 'ArrowLeft':
         this.shifted = (this.shifted + 2) % 32;
         break;
@@ -106,12 +114,10 @@ class LandScroll {
     const ctd = this.distCan.contex;
     this.scrollCan.clear();
     this.distCan.clear();
-
     this.scrolltext.draw(0);
 
     for(i=1; i<21; i++)
       ct.drawImage(this.scrollCan.canvas,0,0,16,200, i*16,0,16,200);
-
     ctd.globalCompositeOperation = 'source-over';
     for(i=0;i<200;i++) {
       // Zoom factor from 9/8 to 35/4
@@ -140,6 +146,9 @@ class LandScroll {
       296,~~(102 + 40*Math.sin(this.ctrCenter+=0.07)),
       174,108
     );
+    this.tlb.forEach(t => t.draw());
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0,0,768,60);
   }
 
   // Overrides "draw" method in the starfield to draw points instead of lines.
@@ -173,4 +182,64 @@ class LandScroll {
     c.imageSmoothingEnabled = c.mozImageSmoothingEnabled = c.oImageSmoothingEnabled = c.webkitImageSmoothingEnabled = false;
   }
 
+}
+
+class TlbSprite{
+  constructor(canvas, xpos, sprites){
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach(key => {
+      if('function' === typeof this[key])
+        this[key] = this[key].bind(this);
+    });
+    this.ctx = canvas.contex;
+    this.xpos = xpos;
+    this.sprites = sprites;
+    this.ctr = 0;
+    this.x = xpos + 44;
+    this.y = -108;
+    this.zoom = 0.6;
+    this.speed = 2;
+    this.enabled = false;
+    this.animate = () => {};
+    this.animations = [
+      this.initTranslate
+    ];
+  }
+
+  _draw(){
+    this.ctx.drawImage(this.sprites.img,
+      174,0,224,108,
+      this.x, this.y, ~~(224*this.zoom), ~~(108*this.zoom)
+    );
+  }
+
+  draw(){
+    if(this.enabled){
+      if(this.animate()){
+        this.randomEffect();
+      }
+      this._draw();
+    }
+  }
+
+  enable(){
+    this.enabled = true;
+    this.animate = this.translate;
+  }
+
+  randomEffect(){
+    this.animations[~~(this.animations.length*Math.random())] ();
+  }
+
+  initTranslate(){
+    this.x = this.xpos + 44;
+    this.zoom = 0.6;
+    this.speed = -2;
+    this.animate = this.translate;
+  }
+  translate(){
+    this.y += this.speed;
+    if(this.speed < 0 && this.y < -108)
+      this.speed *= -1;
+    return (this.speed > 0 && this.y >= 124);
+  }
 }
