@@ -54,7 +54,7 @@ class LandScroll {
         new TlbSprite(this.can, 64, this.sprites),
         new TlbSprite(this.can, 480, this.sprites)
       ];
-      setTimeout(()=> this.tlb.forEach(t => t.enable()), 1000);
+      setTimeout(()=> this.tlb.forEach(t => t.enable()), 90000);
 
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
@@ -201,17 +201,17 @@ class TlbSprite{
     this.enabled = false;
     this.animate = () => {};
     this.animations = [
-      this.initTranslate
+      this.initTranslate,
+      this.initZoomInOut,
+      this.initRotate
     ];
   }
-
   _draw(){
     this.ctx.drawImage(this.sprites.img,
       174,0,224,108,
       this.x, this.y, ~~(224*this.zoom), ~~(108*this.zoom)
     );
   }
-
   draw(){
     if(this.enabled){
       if(this.animate()){
@@ -220,16 +220,13 @@ class TlbSprite{
       this._draw();
     }
   }
-
   enable(){
     this.enabled = true;
     this.animate = this.translate;
   }
-
   randomEffect(){
     this.animations[~~(this.animations.length*Math.random())] ();
   }
-
   initTranslate(){
     this.x = this.xpos + 44;
     this.zoom = 0.6;
@@ -241,5 +238,31 @@ class TlbSprite{
     if(this.speed < 0 && this.y < -108)
       this.speed *= -1;
     return (this.speed > 0 && this.y >= 124);
+  }
+  initZoomInOut(){
+    this.ctrFrames = 120;
+    this.ctr = -Math.PI/2;
+    this.animate = this.zoomInOut
+  }
+  zoomInOut(){
+    const s = Math.sin(this.ctr += Math.PI/30);
+    this.zoom = 0.8 + 0.2 * s;
+    this.x = this.xpos + 112 * (1-this.zoom);
+    this.y = 118 + 10 * (1-s);
+    return (--this.ctrFrames < 0)
+  }
+  initRotate(){
+    this.ctrFrames = 300;
+    this.ctr = -Math.PI/2;
+    this.sens = Math.sign(Math.random()-0.5);
+    this.animate = this.rotate
+  }
+  rotate(){
+    const c = Math.cos(this.ctr);
+    const s = Math.sin(this.ctr += Math.PI/50 * this.sens);
+    this.zoom = 0.8 + 0.2 * s;
+    this.x = this.xpos + 112 * (1-this.zoom);
+    this.y = 108 + 30 * c;
+    return (--this.ctrFrames < 0)
   }
 }
