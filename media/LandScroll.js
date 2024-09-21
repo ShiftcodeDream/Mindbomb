@@ -11,8 +11,8 @@ class LandScroll {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['LandscrollSprites.png','LandscrollBack.png', 'Classic_16x16.png'])).then(data => {
-      [this.sprites, this.backs, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['LandscrollSprites.png','LandscrollBack.png', 'Classic_16x16.png', 'LandScroll.sndh'])).then(data => {
+      [this.sprites, this.backs, this.font, this.zik] = data;
     });
   }
 
@@ -76,6 +76,7 @@ class LandScroll {
       setTimeout(()=> this.tlb.forEach(t => t.enable()), 9000);
 
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -97,6 +98,7 @@ class LandScroll {
   }
 
   stop() {
+    this.zik.stop();
     this.running = false;
   }
 
