@@ -8,6 +8,7 @@ class BBC {
     this.end = this.end.bind(this);
     this.zarbScroll = this.zarbScroll.bind(this);
     this.starfield = this.starfield.bind(this);
+    this.back = this.back.bind(this);
   }
 
   // Loads resources and returns a Promise
@@ -34,6 +35,15 @@ class BBC {
       {nb:25, speedy:0, speedx:-8, color:'#888', size:2},
       {nb:25, speedy:0, speedx:-4, color:'#444', size:2}
     ]);
+    this.balls = [
+      new Ball(this.sprites, 66, 2, [0,0,32,16])
+    ];
+    const destiCoords = [72,86,108,138,176,222,276];
+    for(let x=32,l=32,i=0; x<640; x+=l,l+=16,i++){
+      this.balls.push(
+        new Ball(this.sprites, destiCoords[i], l/8, [x,0,l,l])
+      )
+    }
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -43,17 +53,19 @@ class BBC {
       this.endCallback = endCallback;
       this.can = new canvas(768, 540, "main");
       this.ctx = this.can.contex;
+      
+      this.balls = this.balls.map(b => {b.ctx = this.can.contex; return b});
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
   }
-
   // Main loop, called by Codef requestAnimFrame
   main() {
     if (this.running) {
       this.can.clear();
       this.zarbScroll();
       this.starfield();
+      this.back();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -81,6 +93,13 @@ class BBC {
     this.starsCan.draw(this.can,0,404);
   }
   
+  back(){
+    this.balls.forEach(b => b.draw());
+    this.ctx.fillStyle = "#000";
+    this.ctx.fillRect(0,66,64,338);
+    this.ctx.fillRect(704,66,64,338);
+  }
+  
   stop() {
     this.running = false;
   }
@@ -97,5 +116,24 @@ class BBC {
       event.preventDefault();
       this.stop();
     }
+  }
+}
+
+class Ball{
+  constructor(sprites, ypos, xspeed, dimensions){
+    this.sprites = sprites.img;
+    this.xpos = 0;
+    this.ypos = ypos;
+    this.xspeed = xspeed;
+    this.dimensions = dimensions;
+    
+    this.draw = this.draw.bind(this);
+  }
+  draw(){
+    let [sx,sy,l,h] = this.dimensions;
+    for(let x=this.xpos; x<640; x+=l){
+      this.ctx.drawImage(this.sprites, sx,sy,l,h, x+64,this.ypos,l,h);
+    }
+    this.xpos = (this.xpos - this.xspeed) % l;
   }
 }
