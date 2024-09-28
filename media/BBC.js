@@ -44,6 +44,7 @@ class BBC {
         new Ball(this.sprites, destiCoords[i], l/8, [x,0,l,l])
       )
     }
+    this.sprCtr = 0;
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -94,10 +95,24 @@ class BBC {
   }
   
   back(){
+    let a,i,x,y,p;
     this.balls.forEach(b => b.draw());
     this.ctx.fillStyle = "#000";
     this.ctx.fillRect(0,66,64,338);
     this.ctx.fillRect(704,66,64,338);
+    
+    for(i=0,a=this.sprCtr; i<17; i++,a+=2*Math.PI/17){
+      x = 341 + 251*Math.cos(a);
+      y = 201 + 101*Math.sin(a);
+      p = 0.71875 + 0.28125*Math.sin(a);
+      this.ctx.drawImage(this.sprites.img, 338,190,128,64, ~~x, ~~y, ~~(128*p), ~~(64*p));
+    }
+    this.sprCtr += Math.PI/68;
+    
+    // TODO : condition
+    if(true){
+      this.ctx.drawImage(this.sprites.img, 0,96,338,158, 224,122,338,158);
+    }
   }
   
   stop() {
