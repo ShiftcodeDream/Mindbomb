@@ -10,13 +10,14 @@ class BBC {
     this.starfield = this.starfield.bind(this);
     this.back = this.back.bind(this);
     this.ondule = this.ondule.bind(this);
+    this.equalizers = this.equalizers.bind(this);
   }
 
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['BBCSprites.png','font_64x64.png'])).then(data => {
-      [this.sprites, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['BBCSprites.png','font_64x64.png', 'bbc.mp3'])).then(data => {
+      [this.sprites, this.font, this.zik] = data;
     });
   }
 
@@ -48,6 +49,24 @@ class BBC {
     this.sprCtr = 0;
     this.ond1 = 0;
     this.ond2 = 0;
+    
+    // Extracts audio stream from mp3
+    if(this.zik.mozCaptureStream)
+      this.stream = this.zik.mozCaptureStream();
+    else
+      this.stream = this.zik.captureStream();
+    this.audioCtx = new AudioContext();
+    // Configure what we need
+    this.spectrum = this.audioCtx.createAnalyser();
+    this.spectrum.fftSize = 512;
+    this.dataFromSpectrum = new Uint8Array(this.spectrum.frequencyBinCount);
+    // Connects the sound system : mp3 source -> spectrum analyser -> audio output
+    this.audioSource = this.audioCtx.createMediaStreamSource(this.stream);
+    this.audioSource.connect(this.spectrum);
+    this.spectrum.connect(this.audioCtx.destination);
+    this.levels = new Array(38);
+    this.levels.fill(0);
+    this.zik.loop = true;
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -60,6 +79,7 @@ class BBC {
       
       this.balls = this.balls.map(b => {b.ctx = this.can.contex; return b});
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik.play();
       window.requestAnimFrame(this.main);
     });
   }
@@ -71,6 +91,7 @@ class BBC {
       this.starfield();
       this.back();
       this.ondule();
+      this.equalizers();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
@@ -134,7 +155,24 @@ class BBC {
     this.ond2 += Math.PI/400;
   }
   
+  equalizers(){
+    let niv, v
+    this.ctx.fillStyle = '#E0E000';
+    this.spectrum.getByteFrequencyData(this.dataFromSpectrum);
+    this.dataFromSpectrum.slice(0,38).forEach((bar, i) => {
+      niv = this.levels[i];
+      if(bar > 200)
+        niv = Math.max(niv, bar);
+      if(niv > 0){
+        v = ~~(28*niv/256);
+        this.ctx.fillRect(84 + i*16, 28-v+6, 10, v*2);
+      }
+      this.levels[i] = niv > 8 ? niv-8 : 0;
+    });
+  }
+  
   stop() {
+    this.zik.pause();
     this.running = false;
   }
 
@@ -149,6 +187,9 @@ class BBC {
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
+    }
+    if (event.key === 'l') {
+      console.log(this);
     }
   }
 }
