@@ -15,10 +15,10 @@
 | 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | Done
 | 13 | Synth.js | THE DIGI-SYNTH DEMO SCREEN | Mellowman & Shiftcode | Done
 | 14 | ScrollMassacre | THE SCROLLINE MASSACRE | Shiftcode | Done
-| 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | Shiftcode | WIP
+| 15 | BBC | THE BAD BREW CREW 'MINDBOMB' SCREEN | Shiftcode | Done
 | 16 | Vector | THE VECTORS SCREEN | Shiftcode | Done
 | 17 | NoShit | NO SHIT! | Mellowman | Done
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
-| 19 | resetScreen | RESET SCREEN |
+| 19 | resetScreen | RESET SCREEN | Shiftcode | WIP
 
 PS : WIP stands for Work In Progress. It means that someone is working on it.
