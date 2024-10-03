@@ -8,8 +8,8 @@ class resetScreen {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['AllBalls.png', 'text.png', 'shapes-data.js', 'RedSector.sndh'])).then(data => {
-      [this.allballs, this.text, this.script, this.zik] = data;
+    return Promise.all(this.demoManager.loadResource(['font_little_16x14.png', 'RedSector.sndh'])).then(data => {
+      [this.font, this.zik] = data;
     });
   }
 
@@ -36,6 +36,10 @@ class resetScreen {
       446,208, 474,208, 474,224, 446,240, 474,256, 474,272, 446,272
     ];
     this.arretes = "0-1 1-2 3-4 4-5 5-6 6-3 7-8 8-9 9-10 10-11 11-12 13-14 15-16 17-18 18-19 19-20 20-21 21-22 22-23 23-17 24-25 25-26 26-27 27-24 28-29 29-30 30-31 30-32 32-33 34-35 35-36 36-37 37-38 38-39 40-41 41-42 42-43 43-44 45-46 47-48 48-49 49-50 51-52 52-53 53-54 54-51 55-56 56-57 57-58 58-59 59-60 60-61 61-55 62-63 63-64 64-65 65-62 66-67 67-68 68-69 69-70 71-72 72-73 73-74 74-75 75-76 76-77 77-71".split(' ');
+    this.font.initTile(16,14,32);
+    this.scrolltext = new scrolltext_horizontal();
+    this.scrolltext.scrtxt = "WELL THATS IT.  HOPE YOU GOT AS MUCH PLEASURE FROM THIS DEMO AS I GOT FROM WRITING IT. ONCE AGAIN IF YOU WISH TO CONTACT THE LOST BOYS OUR ADDRESS IS   22 OXFORD RD, TEDDINGTON, MIDDX, TW11 OPZ, ENGLAND.   SEE YOU NEXT TIME!!!                                                                 ";
+    ['#E0E0E0', '#0000E0', '#0000A0', '#000060'];
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -45,6 +49,7 @@ class resetScreen {
     return new Promise(endCallback => {
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
+      this.scrolltext.init(this.can, this.font, 2);
       window.requestAnimFrame(this.main);
     });
   }
@@ -59,7 +64,8 @@ class resetScreen {
       this.ctx.moveTo(this.sommets[d*2], this.sommets[d*2+1]);
       this.ctx.lineTo(this.sommets[f*2], this.sommets[f*2+1]);
       this.ctx.stroke();
-    })
+    });
+    this.scrolltext.draw(386);
     window.requestAnimFrame(this.main);
   }
 }
