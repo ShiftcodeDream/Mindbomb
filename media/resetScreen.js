@@ -46,15 +46,13 @@ class resetScreen {
     }
     for(i=0; i<somm2.length; i+=2){
       let x=somm2[i], y=somm2[i+1];
-      this.sommets.push({x: (x-333)*zoom, y: (240-y)*zoom -1.5, z: 0 });
+      this.sommets.push({x: (x-333)*zoom, y: (240-y)*zoom, z: 0 });
     }
     this.arretes1 = "40-41 41-42 42-43 43-44 45-46 47-48 48-49 49-50 51-52 52-53 53-54 54-51 55-56 56-57 57-58 58-59 59-60 60-61 61-55 62-63 63-64 64-65 65-62 66-67 67-68 68-69 69-70 71-72 72-73 73-74 74-75 75-76 76-77 77-71"
       .split(' ').map(this.toMesh);
     this.arretes2 = "0-1 1-2 3-4 4-5 5-6 6-3 7-8 8-9 9-10 10-11 11-12 13-14 15-16 17-18 18-19 19-20 20-21 21-22 22-23 23-17 24-25 25-26 26-27 27-24 28-29 29-30 30-31 30-32 32-33 34-35 35-36 36-37 37-38 38-39"
       .split(' ').map(this.toMesh);
     this.ctr = 0;
-
-    ['#E0E0E0', '#0000E0', '#0000A0', '#000060'];
 
     this.font.initTile(16,14,32);
     this.scrolltext = new scrolltext_horizontal();
@@ -66,6 +64,7 @@ class resetScreen {
   // As this is the reset screen, exit will do nothing. Ignore endCallback
   start() {
     return new Promise(endCallback => {
+      const colors = [0x000060, 0x0000A0, 0x0000E0, 0xE0E0E0];
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
       this.scrolltext.init(this.can, this.font, 2);
@@ -73,11 +72,18 @@ class resetScreen {
       this.engine = new codef3D(this.can, 20, 20, 1, 50 );
       this.engine.newObject = this.codef3d_newObject.bind(this.engine);
       // LOST BOYS
-      this.lost = this.engine.newObject();
-      this.engine.lines(this.sommets, this.arretes1, new LineBasicMaterial({ color: 0xE0E0E0, linewidth:2}));
-      // MIND BOMB
-      this.mind = this.engine.newObject();
-      this.engine.lines(this.sommets, this.arretes2, new LineBasicMaterial({ color: 0xE0E0E0, linewidth:2}));
+      this.lost = colors.map((c,i) => {
+        let obj = this.engine.newObject();
+        this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
+        this.engine.lines(this.sommets, this.arretes1, new LineBasicMaterial({ color: c, linewidth:2}));
+        return obj;
+      })
+      this.mind = colors.map((c,i) => {
+        let obj = this.engine.newObject();
+        this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
+        this.engine.lines(this.sommets, this.arretes2, new LineBasicMaterial({ color: c, linewidth:2}));
+        return obj;
+      })
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
@@ -96,21 +102,44 @@ class resetScreen {
   }
   // Main loop, called by Codef requestAnimFrame
   main() {
+    let a,i;
     this.can.clear();
-    this.lost.position.x = Math.cos(this.ctr);
-    this.lost.position.y = Math.sin(this.ctr);
-    this.lost.rotation.y += Math.PI/63;
-    this.lost.rotation.z += Math.PI/72;
+    for(let i=0, a=this.ctr; i<4; i++, a+=6) {
+      let [tx, ty] = this.getPositions(a);
+      let [rx, ry, rz] = this.getRotations(a);
 
-    this.mind.position.x = -Math.cos(this.ctr);
-    this.mind.position.y = Math.sin(this.ctr);
-    this.mind.rotation.y -= Math.PI/63;
-    this.mind.rotation.z -= Math.PI/72;
+      this.lost[i].position.x = tx;
+      this.lost[i].position.y = ty;
+      this.lost[i].rotation.x = rx;
+      this.lost[i].rotation.y = ry;
+      this.lost[i].rotation.z = rz;
 
-    this.ctr += 0.08;
+      this.mind[i].position.x = -tx;
+      this.mind[i].position.y = -ty;
+      this.mind[i].rotation.x = rx;
+      this.mind[i].rotation.y = ry;
+      this.mind[i].rotation.z = rz;
+    }
+
+    this.ctr++;
     this.engine.draw();
     this.scrolltext.draw(386);
     window.requestAnimFrame(this.main);
+  }
+  getPositions(a){
+    const pi = Math.PI;
+    return [
+      0,
+      1.5
+    ]
+  }
+  getRotations(a){
+    const pi = Math.PI;
+    return [
+      0,
+      0,
+      a/pi/20
+    ]
   }
   onKeyPressed(event) {
     if (event.key === ' ') {
