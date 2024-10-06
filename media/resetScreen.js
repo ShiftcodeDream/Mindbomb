@@ -9,8 +9,8 @@ class resetScreen {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['font_little_16x14.png', 'RedSector.sndh'])).then(data => {
-      [this.font, this.zik] = data;
+    return Promise.all(this.demoManager.loadResource(['font_little_16x14.png', 'reset.ym'])).then(data => {
+      [this.font, this.preload] = data;
     });
   }
 
@@ -88,6 +88,8 @@ class resetScreen {
       // Force 3D engine to draw dark meshes in the same order they are defined, not according to their z position.
       this.engine.renderer.sortElements = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
+      this.zik = new music("YM");
+      this.zik.LoadAndRun(this.demoManager.basepath + 'reset.ym');
       window.requestAnimFrame(this.main);
     });
   }
