@@ -57,7 +57,6 @@ class resetScreen {
     this.font.initTile(16,14,32);
     this.scrolltext = new scrolltext_horizontal();
     this.scrolltext.scrtxt = "WELL THATS IT.  HOPE YOU GOT AS MUCH PLEASURE FROM THIS DEMO AS I GOT FROM WRITING IT. ONCE AGAIN IF YOU WISH TO CONTACT THE LOST BOYS OUR ADDRESS IS   22 OXFORD RD, TEDDINGTON, MIDDX, TW11 OPZ, ENGLAND.   SEE YOU NEXT TIME!!!                                                                 ";
-    this.pause = false;
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -65,6 +64,7 @@ class resetScreen {
   // As this is the reset screen, exit will do nothing. Ignore endCallback
   start() {
     return new Promise(endCallback => {
+      let obj;
       const colors = [0x000060, 0x0000A0, 0x0000E0, 0xE0E0E0];
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
@@ -72,20 +72,20 @@ class resetScreen {
       // 3D Engine (Three.js)
       this.engine = new codef3D(this.can, 20, 20, 1, 50 );
       this.engine.newObject = this.codef3d_newObject.bind(this.engine);
-      // LOST BOYS
-      this.lost = colors.map((c,i) => {
-        let obj = this.engine.newObject();
+      this.lost = [];
+      this.mind = [];
+      colors.forEach((c,i) => {
         this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
+        // LOST BOYS
+        obj = this.engine.newObject();
         this.engine.lines(this.sommets, this.arretes1, new LineBasicMaterial({ color: c, linewidth:2}));
-        return obj;
-      });
-      this.mind = colors.map((c,i) => {
-        let obj = this.engine.newObject();
-        this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
+        this.lost.push(obj);
+        // MIND BOMB
+        obj = this.engine.newObject();
         this.engine.lines(this.sommets, this.arretes2, new LineBasicMaterial({ color: c, linewidth:2}));
-        return obj;
+        this.mind.push(obj);
       });
-      this.engine.draw();
+      // Force 3D engine to draw dark meshes in the same order they are defined, not according to their z position.
       this.engine.renderer.sortElements = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
@@ -123,7 +123,7 @@ class resetScreen {
       this.mind[i].rotation.y = ry;
       this.mind[i].rotation.z = rz;
     }
-    if(!this.pause) this.ctr++;
+    this.ctr++;
     if(this.ctr >= 2160)
       this.ctr = 0
     this.engine.draw();
@@ -134,20 +134,20 @@ class resetScreen {
     const pi = Math.PI;
     switch(true){
       case a<270: return [
-        1.3*a/135,       // 0 -> 2.6
-        0.6 - 0.3*a/135  // 0.6 -> 0
+        1.3*a/135,        // 0 -> 2.6
+        0.6 - 0.3*a/135   // 0.6 -> 0
       ];
       case a<540: return [
-        5.2 - 1.3*a/135, // 2.6 -> 0
-        0.6 - 0.3*a/135  // 0 -> -0.6
+        5.2 - 1.3*a/135,  // 2.6 -> 0
+        0.6 - 0.3*a/135   // 0 -> -0.6
       ];
       case a<810: return [
-        5.2 - 1.3*a/135, // 0 -> -2.6
-        0.3*a/135 - 1.8  // -0.6 -> 0
+        5.2 - 1.3*a/135,  // 0 -> -2.6
+        0.3*a/135 - 1.8   // -0.6 -> 0
       ];
       case a<1080: return [
-        1.3*a/135 - 10.4,       // -2.6 -> 0
-        0.3*a/135 - 1.8  // 0 -> 0.6
+        1.3*a/135 - 10.4, // -2.6 -> 0
+        0.3*a/135 - 1.8   // 0 -> 0.6
       ];
       default: return this.getPositions(a-1080);
     }
@@ -176,18 +176,6 @@ class resetScreen {
     if (event.key === ' ') {
       event.preventDefault();
       this.stop();
-    }
-    if(event.key === 'l'){
-      console.log(this);
-    }
-    if(event.key === 'p'){
-      this.pause = !this.pause;
-    }
-    if(event.key === 'ArrowLeft'){
-      this.ctr--;
-    }
-    if(event.key === 'ArrowRight'){
-      this.ctr++;
     }
   }
 }
