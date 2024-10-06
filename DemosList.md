@@ -19,6 +19,6 @@
 | 16 | Vector | THE VECTORS SCREEN | Shiftcode | Done
 | 17 | NoShit | NO SHIT! | Mellowman | Done
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
-| 19 | resetScreen | RESET SCREEN | Shiftcode | WIP
+| 19 | resetScreen | RESET SCREEN | Shiftcode | Done
 
 PS : WIP stands for Work In Progress. It means that someone is working on it.
