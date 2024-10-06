@@ -57,6 +57,7 @@ class resetScreen {
     this.font.initTile(16,14,32);
     this.scrolltext = new scrolltext_horizontal();
     this.scrolltext.scrtxt = "WELL THATS IT.  HOPE YOU GOT AS MUCH PLEASURE FROM THIS DEMO AS I GOT FROM WRITING IT. ONCE AGAIN IF YOU WISH TO CONTACT THE LOST BOYS OUR ADDRESS IS   22 OXFORD RD, TEDDINGTON, MIDDX, TW11 OPZ, ENGLAND.   SEE YOU NEXT TIME!!!                                                                 ";
+    this.pause = false;
   }
 
   // Starts the demo and returns a Promise that will be resolved at the end
@@ -77,13 +78,15 @@ class resetScreen {
         this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
         this.engine.lines(this.sommets, this.arretes1, new LineBasicMaterial({ color: c, linewidth:2}));
         return obj;
-      })
+      });
       this.mind = colors.map((c,i) => {
         let obj = this.engine.newObject();
         this.sommets = this.sommets.map(s => ({x:s.x, y:s.y, z:i/100}));
         this.engine.lines(this.sommets, this.arretes2, new LineBasicMaterial({ color: c, linewidth:2}));
         return obj;
-      })
+      });
+      this.engine.draw();
+      this.engine.renderer.sortElements = false;
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
@@ -104,42 +107,70 @@ class resetScreen {
   main() {
     let a,i;
     this.can.clear();
-    for(let i=0, a=this.ctr; i<4; i++, a+=6) {
+    for(let i=0, a=this.ctr; i<4; i++, a+=16) {
       let [tx, ty] = this.getPositions(a);
       let [rx, ry, rz] = this.getRotations(a);
 
       this.lost[i].position.x = tx;
-      this.lost[i].position.y = ty;
+      this.lost[i].position.y = -ty;
       this.lost[i].rotation.x = rx;
       this.lost[i].rotation.y = ry;
       this.lost[i].rotation.z = rz;
 
       this.mind[i].position.x = -tx;
-      this.mind[i].position.y = -ty;
+      this.mind[i].position.y = ty;
       this.mind[i].rotation.x = rx;
       this.mind[i].rotation.y = ry;
       this.mind[i].rotation.z = rz;
     }
-
-    this.ctr++;
+    if(!this.pause) this.ctr++;
+    if(this.ctr >= 2160)
+      this.ctr = 0
     this.engine.draw();
     this.scrolltext.draw(386);
     window.requestAnimFrame(this.main);
   }
   getPositions(a){
     const pi = Math.PI;
-    return [
-      0,
-      1.5
-    ]
+    switch(true){
+      case a<270: return [
+        1.3*a/135,       // 0 -> 2.6
+        0.6 - 0.3*a/135  // 0.6 -> 0
+      ];
+      case a<540: return [
+        5.2 - 1.3*a/135, // 2.6 -> 0
+        0.6 - 0.3*a/135  // 0 -> -0.6
+      ];
+      case a<810: return [
+        5.2 - 1.3*a/135, // 0 -> -2.6
+        0.3*a/135 - 1.8  // -0.6 -> 0
+      ];
+      case a<1080: return [
+        1.3*a/135 - 10.4,       // -2.6 -> 0
+        0.3*a/135 - 1.8  // 0 -> 0.6
+      ];
+      default: return this.getPositions(a-1080);
+    }
   }
   getRotations(a){
     const pi = Math.PI;
-    return [
-      0,
-      0,
-      a/pi/20
-    ]
+    switch(true){
+      case a<1080: return [
+        0,
+        0,
+        a*pi/270
+      ];
+      case a<2160: return [
+        a*pi/270,
+        -a*pi/270,
+        a*pi/270
+      ];
+      default: return [
+        0,
+        0,
+        a*pi/270
+      ];
+    }
   }
   onKeyPressed(event) {
     if (event.key === ' ') {
@@ -148,6 +179,15 @@ class resetScreen {
     }
     if(event.key === 'l'){
       console.log(this);
+    }
+    if(event.key === 'p'){
+      this.pause = !this.pause;
+    }
+    if(event.key === 'ArrowLeft'){
+      this.ctr--;
+    }
+    if(event.key === 'ArrowRight'){
+      this.ctr++;
     }
   }
 }
