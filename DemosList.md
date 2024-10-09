@@ -9,7 +9,7 @@
 | 6 | MegaBalls.js | THE 3D MEGABALLS SCREEN OR WHAT HAPPENS TO YOUR BALLS WHEN YOU MATURE!! | Shiftcode | Done
 | 7 | PoDo.js | THE P.D LIBRARY INFO SCREEN | Mellowman | Done
 | 8 | DiMatrix.js | THE 2ND DIGITAL INSANITY GUEST SCREEN THE MATRIX SCREEN | Shiftcode | Done
-| 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | WIP
+| 9 | SpiralScroll.js | THE CYCLIC SCROLL | NoNameNo | Done
 | 10 | BigSprite.js | THE BIG SPRITE SCREEN | Mellowman | Done
 | 11 | FoxTunnel.js | THE FOXX GUEST SCREEN THE STAR-TUNNEL | Shiftcode | Done
 | 12 | Sinus.js | THE DOTTIE BIG SCROLL SCREEN | Shiftcode | Done
@@ -20,5 +20,3 @@
 | 17 | NoShit | NO SHIT! | Mellowman | Done
 | 18 | DiAhYeah | AH YEAH! | Shiftcode | Done
 | 19 | resetScreen | RESET SCREEN | Shiftcode | Done
-
-PS : WIP stands for Work In Progress. It means that someone is working on it.
