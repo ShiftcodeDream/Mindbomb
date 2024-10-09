@@ -7,6 +7,7 @@ class SpiralScroll {
     this.stop = this.stop.bind(this);
     this.end = this.end.bind(this);
     this.redScroll = this.redScroll.bind(this);
+    this.spiral = this.spiral.bind(this);
   }
 
   // Loads resources and returns a Promise
@@ -37,7 +38,7 @@ class SpiralScroll {
           d[i+2] = 0x40;
           break;
         case 0xC0:
-          if(d[i+1] == 0x80){
+          if(d[i+1] === 0x80){
             d[i]   = 0xE0;
             d[i+1] = 0x60;
             d[i+2] = 0x60;
@@ -76,6 +77,14 @@ class SpiralScroll {
     }
     this.midScroll = (text.length*64 - 400)/2;
     this.scrollCtr = 0;
+    this.spirCan = new canvas(640,400);
+    this.rollCan = new canvas(86*32, 32);
+    this.scrolltext = new scrolltext_horizontal();
+    this.scrolltext.scrtxt = "OH SHIT WHO SLIPPED THE ACID IN MY TEA. POSSIBLY THE MOST MIND BOGGLINGLY HEAD ACHE GIVING SCROLL EVER CODED ON THE FACE OF THIS EARTH. ARRRGGGGHHHH!!!! THIS IS MY SECOND ATTEMPT AT CODING THIS KIND OF SCROLLINE. I GAVE UP FIRST TIME BECAUSE I COULD NOT GET THE FONTS TO LOOK RIGHT. SECOND TIME AROUND WAS A LOT EASIER. THE SCROLL CONTAINS NINETY ONE INDIVIDUAL SPRITES AND TAKES A GRAND TOTAL OF SEVENTY PERCENT PROCESSOR TIME TO MAKE IT ALL UP! THIS SCREEN DEFINETLY TOOK A BIT OF PERSEVERANCE BUT I THINK THAT SECOND TIME AROUND IT LOOKS PRETTY GOOD! MANY THANKS TO PHIL FOR HELPING ME WITH MY STARFIELD MATHS. A GOOD SECOND OPINION IS VERY USEFUL. THIS SCREEN FEATURES MY NEW STARFIELD ROUTINE WHICH IS ABOUNT EIGHT TIMES FASTER AND CONSIDERABLY MORE REALISTIC THAN MY PREVIOUS ATTEMPT. IT TOTALLY TRANSFORMED THIS SCREEN FROM BEEING RATHER MEDIOCRE INTO SOMETHING A LOT BETTER! AS IT STANDS THIS FILE IS THE BIGGEST ON THE DISK DUE TO MY RATHER WASTEFUL CODING PRACTICES BUT IT IS TO LATE NOW TO CHANGE ALL THE CODE AND ALSO I AM JUST TO DAWN LAZY. SINCE THIS IS A BASTARD TO READ I THINK I SHALL MAKE THIS SCROLL NICE AND SHORT SO THAT YOU DO NOT HAVE SUCH A LARGE HEADACHE THAT YOU CANNOT BE BOTHERES TO LOOK AT ALL THE OTHER WONDERFUL SCREENS ON THIS DEMO!!!. OK ITS TIME TO WRAP AND IN THE NOTORIOUS WAY THAT I DO THINGS I SHALL LEAVE YOU WITH SOME DOTS TO CALM YOUR SHATTERED NERVES!!!!!!"
+    + this.fillWith(150, '.') + this.fillWith(100, ' ');
+    this.scrolltext.init(this.rollCan, this.font, 32);
+    this.spirCtr = 4;
+    this.rasterPos = 20;
     this.running = true;
   }
 
@@ -86,6 +95,13 @@ class SpiralScroll {
       this.endCallback = endCallback;
       this.can = new canvas(640, 400, "main");
       this.ctx = this.can.contex;
+      this.starfield = [
+        new starfield3D(this.can, 80, 6, 640, 400, 320, 200, '#ccc', 100, 0,0),
+        new starfield3D(this.can, 80, 6, 640, 400, 320, 200, '#666', 100, 0,0)
+      ].map(s => {
+        s.draw = Object.getPrototypeOf(this).overrideDrawStarfield.bind(s);
+        return s;
+      });
       document.body.addEventListener('keydown', this.onKeyPressed);
       window.requestAnimFrame(this.main);
     });
@@ -95,11 +111,42 @@ class SpiralScroll {
   main() {
     if (this.running) {
       this.can.clear();
+      this.starfield.forEach(s=>s.draw());
       this.redScroll();
+      this.spiral();
       window.requestAnimFrame(this.main);
     } else {
       this.end();
     }
+  }
+
+  spiral(){
+    let i,x,y,s,a;
+    const sp = this.spirCan.contex;
+    this.spirCan.clear();
+    if(this.spirCtr++ >= 4) {
+      this.rollCan.clear();
+      this.scrolltext.draw(0);
+      this.spirCtr = 0;
+    }
+    sp.globalCompositeOperation = 'source-over';
+    for(i=0,a=this.spirCtr*6.5*Math.PI/344; i<86; i++,a+=6.5*Math.PI/86){
+      x = 320 - i*260/86*Math.cos(a);
+      y = 200 + i*200/86*Math.sin(a);
+      s = 12*i/43 + 8;
+      sp.drawImage(this.rollCan.canvas, (86-i)*32,0, 32,32, ~~x,~~y,~~s,~~s);
+    }
+    sp.globalCompositeOperation = 'source-atop';
+    sp.drawImage(this.raster.img, 0,0,1,448, 0,this.rasterPos,640,448);
+    sp.drawImage(this.raster.img, 0,0,1,448, 0,this.rasterPos+448,640,448);
+    this.rasterPos -= 6;
+    if(this.rasterPos <= -428)
+      this.rasterPos = 20;
+    this.spirCan.draw(this.can,0,0);
+  }
+
+  fillWith(nb, what){
+    return new Array(nb).fill(what).join('');
   }
 
   redScroll(){
@@ -107,7 +154,32 @@ class SpiralScroll {
     this.scrollCan.draw(this.can, 0, ~~-y);
     this.scrollCan.draw(this.can, 576, ~~-y);
   }
-  
+  // Overrides "draw" method in the starfield to draw points instead of lines.
+  overrideDrawStarfield(){
+    var tmp=this.dest.contex.strokeStyle;
+    var tmp2 = this.dest.contex.globalAlpha;
+    var tmp3 = this.dest.contex.lineWidth;
+    this.dest.contex.globalAlpha=1;
+    this.dest.contex.fillStyle=this.color;
+
+    for(var i=0;i<this.n;i++){
+      this.test=true;
+      this.star_x_save=this.star[i][3];
+      this.star_y_save=this.star[i][4];
+      this.star[i][0]+=(this.centx-this.x)>>4; if(this.star[i][0]>this.x<<1) { this.star[i][0]-=this.w<<1; this.test=false; } if(this.star[i][0]<-this.x<<1) { this.star[i][0]+=this.w<<1; this.test=false; }
+      this.star[i][1]+=(this.centy-this.y)>>4; if(this.star[i][1]>this.y<<1) { this.star[i][1]-=this.h<<1; this.test=false; } if(this.star[i][1]<-this.y<<1) { this.star[i][1]+=this.h<<1; this.test=false; }
+      this.star[i][2]-=this.star_speed; if(this.star[i][2]>this.z) { this.star[i][2]-=this.z; this.test=false; } if(this.star[i][2]<0) { this.star[i][2]+=this.z; this.test=false; }
+      this.star[i][3]=this.x+(this.star[i][0]/this.star[i][2])*this.star_ratio;
+      this.star[i][4]=this.y+(this.star[i][1]/this.star[i][2])*this.star_ratio;
+      if(this.star_x_save>0&&this.star_x_save<this.w&&this.star_y_save>0&&this.star_y_save<this.h&&this.test){
+        this.dest.contex.fillRect(this.star_x_save+this.offsetx,this.star_y_save+this.offsety, 2, 2);
+      }
+    }
+    this.dest.contex.strokeStyle=tmp;
+    this.dest.contex.globalAlpha=tmp2;
+    this.dest.contex.lineWidth=tmp3;
+  }
+
   stop() {
     this.running = false;
   }
