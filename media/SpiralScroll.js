@@ -13,8 +13,8 @@ class SpiralScroll {
   // Loads resources and returns a Promise
   // You can make long precalculations here.
   load() {
-    return Promise.all(this.demoManager.loadResource(['Hellfire_64x64_46.png', 'CyclicRaster.png', 'OnePlan_32x32.png'])).then(data => {
-      [this.hell, this.raster, this.font] = data;
+    return Promise.all(this.demoManager.loadResource(['Hellfire_64x64_46.png', 'CyclicRaster.png', 'OnePlan_32x32.png', 'Spiral.sndh'])).then(data => {
+      [this.hell, this.raster, this.font, this.zik] = data;
     });
   }
 
@@ -85,6 +85,7 @@ class SpiralScroll {
     this.scrolltext.init(this.rollCan, this.font, 32);
     this.spirCtr = 4;
     this.rasterPos = 20;
+    this.zik.play();
     this.running = true;
   }
 
@@ -181,6 +182,7 @@ class SpiralScroll {
   }
 
   stop() {
+    this.zik.stop();
     this.running = false;
   }
 
